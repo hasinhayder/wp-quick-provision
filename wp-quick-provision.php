@@ -199,6 +199,14 @@ add_action( 'activated_plugin', function ( $plugin ) {
 	}
 } );
 
+add_filter( 'plugin_row_meta', function ( $links, $file ) {
+	if ( plugin_basename( __FILE__ ) == $file ) {
+		array_push( $links, sprintf( "<a href='%s' target='_blank'>%s</a>", esc_url( 'https://github.com/hasinhayder/wp-quick-provision' ), __( 'Fork on Github', 'wp-quick-provision' ) ) );
+		array_push( $links, sprintf( "<a href='%s' target='_blank'>%s</a>", esc_url( 'https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306' ), __( 'Sample data', 'wp-quick-provision' ) ) );
+	}
+
+	return $links;
+}, 10, 2 );
 
 function wpqp_process_keys( $wpqp_keys ) {
 	$wpqp__keys = [];
