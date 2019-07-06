@@ -143,8 +143,11 @@ add_action( 'admin_menu', function () {
 
 			do_action( "wpqc_plugins_activated" );
 
+			foreach($wpqc_options as $_okey=>$_ovalue){
+			    update_option($_okey, $_ovalue);
+            }
 
-			//do_action( "wpqc_options_updated" );
+			do_action( "wpqc_options_updated" );
 		}
 
 	}, '', 5 );
