@@ -187,6 +187,12 @@ add_action( 'admin_menu', function () {
 
 } );
 
+add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), function ( $links ) {
+	array_unshift( $links, sprintf( "<a href='%s'>%s</a>", admin_url( 'tools.php?page=wpqp' ), __( 'Provision Now', 'wp-quick-provision' ) ) );
+
+	return $links;
+} );
+
 add_action( 'activated_plugin', function ( $plugin ) {
 	if ( $plugin == plugin_basename( __FILE__ ) ) {
 		exit( wp_redirect( admin_url( 'tools.php?page=wpqp' ) ) );
