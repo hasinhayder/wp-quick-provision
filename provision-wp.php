@@ -65,6 +65,7 @@ add_action( 'admin_menu', function () {
 			$wpqc_gist_body       = json_decode( strtolower( $wpqc_gist_mixed_data['body'] ), true );
 			$wpqc_themes          = $wpqc_gist_body['themes'];
 			$wpqc_plugins         = $wpqc_gist_body['plugins'];
+			$wpqc_options         = $wpqc_gist_body['options'];
 
 			$wpqc_installed_themes  = wp_get_themes();
 			$wpqc_installed_plugins = wpqc_process_keys( array_keys( get_plugins() ) );
@@ -101,8 +102,6 @@ add_action( 'admin_menu', function () {
 			}
 
 			do_action( "wpqc_themes_installed" );
-
-			switch_theme( 'astra' );
 
 			echo '<h2>' . __( 'Installing Plugins', 'wp-quick-configurator' ) . '</h2>';
 			foreach ( $wpqc_plugins as $wpqc_plugin ) {
