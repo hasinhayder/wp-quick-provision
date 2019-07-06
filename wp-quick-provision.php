@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: WP Quick Configurator
+Plugin Name: WP Quick Provision
 Plugin URI:
 Description:
 Version: 1.0
@@ -24,41 +24,20 @@ add_action( 'admin_menu', function () {
 		include_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
 		include_once( ABSPATH . 'wp-admin/includes/misc.php' );
 
-		/*$wpqp_data = [
-			'themes'  => [ 'astra', 'amity', 'solid-construction-classic' ],
-			'plugins' => [ 'contact-form-7', 'woocommerce', 'wordfence', 'autoptimize', ]
-		];
-		echo "<pre>";
-		print_r( wp_json_encode( $wpqp_data, JSON_PRETTY_PRINT ) );
-
-		echo "</pre>"*/
 		?>
-        <h2><?php _e( 'WordPress Quick Configurator', 'wp-quick-provision' ); ?></h2>
+        <h2><?php _e( 'WordPress Quick Provision', 'wp-quick-provision' ); ?></h2>
         <form method="POST">
 
             <label for="gist"><strong><?php _e( 'Your GIST Configuration URL', 'wp-quick-provision' ); ?></strong></label><br/>
-            <textarea style="font-size: 15px;margin-top:20px;" name="gist" id="gist" cols="70"
-                      rows="5">https://gist.githubusercontent.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306/</textarea><br/>
-            <!--            <label for="themes">Install Themes</label><br/>-->
-            <!--            <textarea name="themes" id="themes" cols="70"-->
-            <!--                      rows="5">solid-construction-classic, astra, amity</textarea><br/>-->
-            <!---->
-            <!--            <label for="plugins">Install Plugins</label><br/>-->
-            <!--            <textarea name="plugins" id="plugins" cols="70"-->
-            <!--                      rows="5">contact-form-7, woocommerce, wordfence, autoptimize</textarea><br/>-->
-
-			<?php echo submit_button( __( 'Show Me The Magic', 'wp-quick-provision' ) ); ?>
+            <input type="text" style="font-size: 15px;margin-top:20px;" name="gist" id="gist" cols="70"
+                   rows="5" placeholder="<?php _e('configuration gist url','wp-quick-provision'); ?>"/><br/>
+			<?php echo submit_button( __( 'Start Provisioning', 'wp-quick-provision' ) ); ?>
         </form>
 		<?php
 
 		if ( isset( $_POST['submit'] ) ) {
 			$wpqp_theme_installer  = new Theme_Upgrader();
 			$wpqp_plugin_installer = new Plugin_Upgrader();
-
-			/*$wpqp__themes  = sanitize_text_field( $wpqp__POST['themes'] );
-			$wpqp__plugins = sanitize_text_field( $wpqp__POST['plugins'] );
-			$wpqp_themes   = explode( ',', $wpqp__themes );
-			$wpqp_plugins  = explode( ',', $wpqp__plugins );*/
 
 			$wpqp_gist_url        = trailingslashit( sanitize_text_field( $_POST['gist'] ) ) . "raw";
 			$wpqp_gist_mixed_data = wp_remote_get( $wpqp_gist_url );
@@ -69,13 +48,6 @@ add_action( 'admin_menu', function () {
 
 			$wpqp_installed_themes  = wp_get_themes();
 			$wpqp_installed_plugins = wpqp_process_keys( array_keys( get_plugins() ) );
-
-			/*echo "<pre>";
-			//print_r($wpqp_installed_themes);
-			echo "</pre>";
-			echo "<pre>";
-			//print_r($wpqp_installed_plugins);
-			echo "</pre>";*/
 
 			echo '<h2>' . __( 'Installing Themes', 'wp-quick-provision' ) . '</h2>';
 			foreach ( $wpqp_themes as $wpqp_theme ) {
