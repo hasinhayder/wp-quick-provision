@@ -82,7 +82,7 @@ add_action( 'admin_menu', function () {
 				$wpqc__theme = strtolower( trim( $wpqc_theme ) );
 				if ( ! array_key_exists( $wpqc__theme, $wpqc_installed_themes ) ) {
 					?>
-                    <div class="notice notice-success is-dismissible">
+                    <div class="notice notice-success">
                         <p><?php printf( __( "<strong>Installing Theme %s</strong>", 'wp-quick-configurator' ), $wpqc__theme ); ?></p>
                         <p>
 							<?php
@@ -94,7 +94,7 @@ add_action( 'admin_menu', function () {
 
 				} else {
 					?>
-                    <div class="notice notice-error is-dismissible">
+                    <div class="notice notice-error">
                         <p><?php printf( __( "Theme <strong>%s</strong> is already installed", 'wp-quick-configurator' ), $wpqc__theme ); ?></p>
                     </div>
 					<?php
@@ -108,7 +108,7 @@ add_action( 'admin_menu', function () {
 				$wpqc__plugin = strtolower( trim( $wpqc_plugin ) );
 				if ( ! array_key_exists( $wpqc__plugin, $wpqc_installed_plugins ) ) {
 					?>
-                    <div class="notice notice-success is-dismissible">
+                    <div class="notice notice-success">
                         <p><?php printf( __( "<strong>Installing Plugin %s</strong>", 'wp-quick-configurator' ), $wpqc__plugin ); ?></p>
                         <p>
 							<?php
@@ -120,7 +120,7 @@ add_action( 'admin_menu', function () {
 
 				} else {
 					?>
-                    <div class="notice notice-error is-dismissible">
+                    <div class="notice notice-error">
                         <p><?php printf( __( 'Plugin <strong>%s</strong> is already installed', 'wp-quick-configurator' ), $wpqc__plugin ); ?></p>
                     </div>
 					<?php
@@ -135,7 +135,7 @@ add_action( 'admin_menu', function () {
 				$wpqc__plugin = strtolower( trim( $wpqc_plugin ) );
 				activate_plugin( $wpqc_installed_plugins[ $wpqc__plugin ] );
 				?>
-                <div class="notice notice-success is-dismissible">
+                <div class="notice notice-success">
                     <p><?php printf( __( "</strong>%s</strong> is Activated <br/>", 'wp-quick-configurator' ), $wpqc__plugin ); ?></p>
                 </div>
 				<?php
