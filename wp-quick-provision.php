@@ -1,8 +1,8 @@
 <?php
 /*
 Plugin Name: WP Quick Provision
-Plugin URI:
-Description:
+Plugin URI: https://github.com/hasinhayder/wp-quick-provision
+Description: This is a powerful provisioning plugin to install multiple themes and plugins automatically by providing them as a list from <a href='https://gist.github.com'>https://gist.github.com</a>. You can also update multiple options in your options table at once. This plugin can save your time from installing same set of themes and plugins again and again in your WordPress setup. Extremely handy to quickly setup your development platform.
 Version: 1.0
 Author: Hasin Hayder
 Author URI: https://hasin.me
@@ -188,16 +188,17 @@ add_action( 'admin_menu', function () {
 } );
 
 add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), function ( $links ) {
-	array_unshift( $links, sprintf( "<a href='%s'>%s</a>", admin_url( 'tools.php?page=wpqp' ), __( 'Provision Now', 'wp-quick-provision' ) ) );
+	array_unshift( $links, sprintf( "<a href='%s'><strong style='color: #ff631d; display: inline;'>%s</strong></a>", admin_url( 'tools.php?page=wpqp' ), __( 'Provision Now', 'wp-quick-provision' ) ) );
 
 	return $links;
 } );
 
 add_action( 'activated_plugin', function ( $plugin ) {
-	if ( $plugin == plugin_basename( __FILE__ ) ) {
+	if ( plugin_basename( __FILE__ ) == $plugin ) {
 		exit( wp_redirect( admin_url( 'tools.php?page=wpqp' ) ) );
 	}
 } );
+
 
 function wpqp_process_keys( $wpqp_keys ) {
 	$wpqp__keys = [];
@@ -208,4 +209,5 @@ function wpqp_process_keys( $wpqp_keys ) {
 
 	return $wpqp__keys;
 }
+
 

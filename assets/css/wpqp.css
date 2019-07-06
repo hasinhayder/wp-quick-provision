@@ -1,0 +1,23 @@
+.wpqp_info{
+    background: #fff;
+    border-left: 4px solid #fff;
+    box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
+    margin: 5px 15px 2px;
+    padding: 1px 12px;
+}
+
+.wpqp_info h1{
+    display: none;
+}
+
+.wpqp_error{
+    border-left-color: #dc3232;
+}
+
+.wpqp_success{
+    border-left-color: #46b450;
+}
+
+.wpqp_warning{
+    border-left-color: #fedf00;
+}
