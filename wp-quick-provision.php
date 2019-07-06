@@ -31,9 +31,7 @@ add_action( 'admin_menu', function () {
 			$wpqp_proceed = true;
 			include_once( ABSPATH . 'wp-admin/includes/theme.php' );
 			include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-//			include_once( ABSPATH . 'wp-admin/includes/file.php' );
 			include_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
-//			include_once( ABSPATH . 'wp-admin/includes/misc.php' );
 
 			?>
             <div class="wrap">
@@ -73,16 +71,14 @@ add_action( 'admin_menu', function () {
 					if ( wp_verify_nonce( sanitize_key( $_POST['wpqp_nonce'] ), 'wpqp_provision' ) ) {
 						$wpqp_theme_installer  = new Theme_Upgrader();
 						$wpqp_plugin_installer = new Plugin_Upgrader();
-
 						$wpqp_gist_url        = trailingslashit( sanitize_text_field( $_POST['gist'] ) ) . "raw";
 						$wpqp_gist_mixed_data = wp_remote_get( $wpqp_gist_url );
 						$wpqp_gist_body       = json_decode( strtolower( $wpqp_gist_mixed_data['body'] ), true );
+						$wpqp_installed_themes  = wp_get_themes();
+						$wpqp_installed_plugins = wpqp_process_keys( array_keys( get_plugins() ) );
 						$wpqp_themes          = apply_filters( 'wpqp_themes', $wpqp_gist_body['themes'] );
 						$wpqp_plugins         = apply_filters( 'wpqp_plugins', $wpqp_gist_body['plugins'] );
 						$wpqp_options         = apply_filters( 'wpqp_options', $wpqp_gist_body['options'] );
-
-						$wpqp_installed_themes  = wp_get_themes();
-						$wpqp_installed_plugins = wpqp_process_keys( array_keys( get_plugins() ) );
 
 						if ( count( $wpqp_themes ) > 0 ) {
 							echo '<h2>' . __( 'Installing Themes', 'wp-quick-provision' ) . '</h2>';
@@ -164,7 +160,6 @@ add_action( 'admin_menu', function () {
 							do_action( "wpqp_plugins_activated" );
 						}
 
-
 						if ( count( $wpqp_options ) > 0 ) {
 							echo '<h2>' . __( 'Updating Options', 'wp-quick-provision' ) . '</h2>';
 
@@ -174,8 +169,6 @@ add_action( 'admin_menu', function () {
 
 							do_action( "wpqp_options_updated" );
 						}
-
-
 					}
 				}
 				?>
