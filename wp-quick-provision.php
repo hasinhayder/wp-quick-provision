@@ -25,7 +25,7 @@ add_action( 'admin_menu', function () {
 	add_submenu_page( 'tools.php',
 		__( 'WP Quick Provision', 'wp-quick-provision' ),
 		__( 'Quick Provision', 'wp-quick-provision' ),
-        'manage_options',
+		'manage_options',
 		'wpqp',
 		function () {
 			$wpqp_proceed = true;
@@ -69,103 +69,111 @@ add_action( 'admin_menu', function () {
 					if ( wp_verify_nonce( sanitize_key( $_POST['wpqp_nonce'] ), 'wpqp_provision' ) ) {
 						$wpqp_theme_installer  = new Theme_Upgrader();
 						$wpqp_plugin_installer = new Plugin_Upgrader();
-						$wpqp_gist_url        = trailingslashit( sanitize_text_field( $_POST['gist'] ) ) . "raw";
-						$wpqp_gist_mixed_data = wp_remote_get( $wpqp_gist_url );
-						$wpqp_gist_body       = json_decode( strtolower( $wpqp_gist_mixed_data['body'] ), true );
-						$wpqp_installed_themes  = wp_get_themes();
-						$wpqp_installed_plugins = wpqp_process_keys( array_keys( get_plugins() ) );
-						$wpqp_themes          = apply_filters( 'wpqp_themes', $wpqp_gist_body['themes'] );
-						$wpqp_plugins         = apply_filters( 'wpqp_plugins', $wpqp_gist_body['plugins'] );
-						$wpqp_options         = apply_filters( 'wpqp_options', $wpqp_gist_body['options'] );
-
-						if ( count( $wpqp_themes ) > 0 ) {
-							echo '<h2>' . __( 'Installing Themes', 'wp-quick-provision' ) . '</h2>';
-							foreach ( $wpqp_themes as $wpqp_theme ) {
-								$wpqp__theme = strtolower( trim( $wpqp_theme ) );
-								if ( ! array_key_exists( $wpqp__theme, $wpqp_installed_themes ) ) {
-									?>
-                                    <div class="wpqp_info wpqp_success" style="margin-left: 1px;">
-                                        <p><?php printf( __( "<strong>Installing theme %s</strong>", 'wp-quick-provision' ), $wpqp__theme ); ?></p>
-                                        <p>
-											<?php
-											$wpqp_theme_installer->install( 'https://downloads.wordpress.org/theme/' . $wpqp__theme . '.latest-stable.zip' );
-											?>
-                                        </p>
-                                    </div>
-									<?php
-
-								} else {
-									?>
-                                    <div class="wpqp_info wpqp_error" style="margin-left: 1px;">
-                                        <p><?php printf( __( "Theme <strong>%s</strong> is already installed", 'wp-quick-provision' ), $wpqp__theme ); ?></p>
-                                    </div>
-									<?php
-								}
-							}
-
-							do_action( "wpqp_themes_installed" );
-						}
-
-						if ( count( $wpqp_plugins ) > 0 ) {
-							echo '<h2>' . __( 'Installing Plugins', 'wp-quick-provision' ) . '</h2>';
-							foreach ( $wpqp_plugins as $wpqp_plugin ) {
-								$wpqp__plugin = strtolower( trim( $wpqp_plugin ) );
-								if ( ! array_key_exists( $wpqp__plugin, $wpqp_installed_plugins ) ) {
-									?>
-                                    <div class="wpqp_info wpqp_success" style="margin-left: 1px;">
-                                        <p><?php printf( __( "<strong>Installing plugin %s</strong>", 'wp-quick-provision' ), $wpqp__plugin ); ?></p>
-                                        <p>
-											<?php
-											$wpqp_plugin_installer->install( 'https://downloads.wordpress.org/plugin/' . $wpqp__plugin . '.latest-stable.zip' );
-											?>
-                                        </p>
-                                    </div>
-									<?php
-
-								} else {
-									?>
-                                    <div class="wpqp_info wpqp_error" style="margin-left: 1px;">
-                                        <p><?php printf( __( 'Plugin <strong>%s</strong> is already installed', 'wp-quick-provision' ), $wpqp__plugin ); ?></p>
-                                    </div>
-									<?php
-								}
-							}
-
-							do_action( "wpqp_plugins_installed" );
-
+						$wpqp_gist_url         = trailingslashit( esc_url( $_POST['gist'] ) ) . "raw";
+						$wpqp_gist_mixed_data  = wp_remote_get( $wpqp_gist_url );
+						if ( isset( $wpqp_gist_mixed_data['body'] ) && trim( $wpqp_gist_mixed_data['body'] ) != '' ) {
+							$wpqp_gist_body         = json_decode( strtolower( $wpqp_gist_mixed_data['body'] ), true );
+							$wpqp_installed_themes  = wp_get_themes();
 							$wpqp_installed_plugins = wpqp_process_keys( array_keys( get_plugins() ) );
 
-							echo '<h2>' . __( 'Activating Plugins', 'wp-quick-provision' ) . '</h2>';
-							foreach ( $wpqp_plugins as $wpqp_plugin ) {
-								$wpqp__plugin = strtolower( trim( $wpqp_plugin ) );
-								if ( ! is_plugin_active( $wpqp_installed_plugins[ $wpqp__plugin ] ) ) {
-									activate_plugin( $wpqp_installed_plugins[ $wpqp__plugin ] );
-									?>
-                                    <div class="wpqp_info wpqp_success" style="margin-left: 1px;">
-                                        <p><?php printf( __( "Plugin <strong>%s</strong> is activated <br/>", 'wp-quick-provision' ), $wpqp__plugin ); ?></p>
-                                    </div>
-									<?php
-								} else {
-									?>
-                                    <div class="wpqp_info wpqp_error" style="margin-left: 1px;">
-                                        <p><?php printf( __( "Plugin <strong>%s</strong> is already active<br/>", 'wp-quick-provision' ), $wpqp__plugin ); ?></p>
-                                    </div>
-									<?php
+							if ( isset( $wpqp_gist_body['themes'] ) ) {
+								$wpqp_themes = apply_filters( 'wpqp_themes', $wpqp_gist_body['themes'] );
+								if ( count( $wpqp_themes ) > 0 ) {
+									echo '<h2>' . __( 'Installing Themes', 'wp-quick-provision' ) . '</h2>';
+									foreach ( $wpqp_themes as $wpqp_theme ) {
+										$wpqp__theme = strtolower( trim( $wpqp_theme ) );
+										if ( ! array_key_exists( $wpqp__theme, $wpqp_installed_themes ) ) {
+											?>
+                                            <div class="wpqp_info wpqp_success" style="margin-left: 1px;">
+                                                <p><?php printf( __( "<strong>Installing theme %s</strong>", 'wp-quick-provision' ), esc_html( $wpqp__theme ) ); ?></p>
+                                                <p>
+													<?php
+													$wpqp_theme_installer->install( esc_url( 'https://downloads.wordpress.org/theme/' .  $wpqp__theme  . '.latest-stable.zip' ) );
+													?>
+                                                </p>
+                                            </div>
+											<?php
+
+										} else {
+											?>
+                                            <div class="wpqp_info wpqp_error" style="margin-left: 1px;">
+                                                <p><?php printf( __( "Theme <strong>%s</strong> is already installed", 'wp-quick-provision' ), esc_html( $wpqp__theme ) ); ?></p>
+                                            </div>
+											<?php
+										}
+									}
+
+									do_action( "wpqp_themes_installed" );
 								}
-
 							}
 
-							do_action( "wpqp_plugins_activated" );
-						}
+							if ( isset( $wpqp_gist_body['plugins'] ) ) {
+								$wpqp_plugins = apply_filters( 'wpqp_plugins', $wpqp_gist_body['plugins'] );
+								if ( count( $wpqp_plugins ) > 0 ) {
+									echo '<h2>' . __( 'Installing Plugins', 'wp-quick-provision' ) . '</h2>';
+									foreach ( $wpqp_plugins as $wpqp_plugin ) {
+										$wpqp__plugin = strtolower( trim( $wpqp_plugin ) );
+										if ( ! array_key_exists( $wpqp__plugin, $wpqp_installed_plugins ) ) {
+											?>
+                                            <div class="wpqp_info wpqp_success" style="margin-left: 1px;">
+                                                <p><?php printf( __( "<strong>Installing plugin %s</strong>", 'wp-quick-provision' ), esc_html( $wpqp__plugin ) ); ?></p>
+                                                <p>
+													<?php
+													$wpqp_plugin_installer->install( esc_url( 'https://downloads.wordpress.org/plugin/' . $wpqp__plugin . '.latest-stable.zip' ) );
+													?>
+                                                </p>
+                                            </div>
+											<?php
 
-						if ( count( $wpqp_options ) > 0 ) {
-							echo '<h2>' . __( 'Updating Options', 'wp-quick-provision' ) . '</h2>';
+										} else {
+											?>
+                                            <div class="wpqp_info wpqp_error" style="margin-left: 1px;">
+                                                <p><?php printf( __( 'Plugin <strong>%s</strong> is already installed', 'wp-quick-provision' ), esc_html( $wpqp__plugin ) ); ?></p>
+                                            </div>
+											<?php
+										}
+									}
 
-							foreach ( $wpqp_options as $_okey => $_ovalue ) {
-								update_option( $_okey, $_ovalue );
+									do_action( "wpqp_plugins_installed" );
+
+									$wpqp_installed_plugins = wpqp_process_keys( array_keys( get_plugins() ) );
+
+									echo '<h2>' . __( 'Activating Plugins', 'wp-quick-provision' ) . '</h2>';
+									foreach ( $wpqp_plugins as $wpqp_plugin ) {
+										$wpqp__plugin = strtolower( trim( $wpqp_plugin ) );
+										if ( ! is_plugin_active( $wpqp_installed_plugins[ $wpqp__plugin ] ) ) {
+											activate_plugin( $wpqp_installed_plugins[ $wpqp__plugin ] );
+											?>
+                                            <div class="wpqp_info wpqp_success" style="margin-left: 1px;">
+                                                <p><?php printf( __( "Plugin <strong>%s</strong> is activated <br/>", 'wp-quick-provision' ), esc_html( $wpqp__plugin ) ); ?></p>
+                                            </div>
+											<?php
+										} else {
+											?>
+                                            <div class="wpqp_info wpqp_error" style="margin-left: 1px;">
+                                                <p><?php printf( __( "Plugin <strong>%s</strong> is already active<br/>", 'wp-quick-provision' ), esc_html( $wpqp__plugin ) ); ?></p>
+                                            </div>
+											<?php
+										}
+
+									}
+
+									do_action( "wpqp_plugins_activated" );
+								}
 							}
 
-							do_action( "wpqp_options_updated" );
+							if ( isset( $wpqp_gist_body['options'] ) ) {
+								$wpqp_options = apply_filters( 'wpqp_options', $wpqp_gist_body['options'] );
+								if ( count( $wpqp_options ) > 0 ) {
+									echo '<h2>' . __( 'Updating Options', 'wp-quick-provision' ) . '</h2>';
+
+									foreach ( $wpqp_options as $_okey => $_ovalue ) {
+										update_option( sanitize_text_field( $_okey ), sanitize_text_field( $_ovalue ) );
+									}
+
+									do_action( "wpqp_options_updated" );
+								}
+							}
 						}
 					}
 				}
@@ -179,21 +187,21 @@ add_action( 'admin_menu', function () {
 } );
 
 add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), function ( $links ) {
-    //add a new action link as 'provision now' under the plugin name
+	//add a new action link as 'provision now' under the plugin name
 	array_unshift( $links, sprintf( "<a href='%s'><strong style='color: #ff631d; display: inline;'>%s</strong></a>", admin_url( 'tools.php?page=wpqp' ), __( 'Provision Now', 'wp-quick-provision' ) ) );
 
 	return $links;
 } );
 
 add_action( 'activated_plugin', function ( $plugin ) {
-    //redirect the user to the quick provision page after activation
+	//redirect the user to the quick provision page after activation
 	if ( plugin_basename( __FILE__ ) == $plugin ) {
 		exit( wp_redirect( admin_url( 'tools.php?page=wpqp' ) ) );
 	}
 } );
 
 add_filter( 'plugin_row_meta', function ( $links, $file ) {
-    //add two links under the description section
+	//add two links under the description section
 	if ( plugin_basename( __FILE__ ) == $file ) {
 		array_push( $links, sprintf( "<a href='%s' target='_blank'>%s</a>", esc_url( 'https://github.com/hasinhayder/wp-quick-provision' ), __( 'Fork on Github', 'wp-quick-provision' ) ) );
 		array_push( $links, sprintf( "<a href='%s' target='_blank'>%s</a>", esc_url( 'https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306' ), __( 'Sample data', 'wp-quick-provision' ) ) );
