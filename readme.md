@@ -44,8 +44,6 @@ or
 
 After installing you will find the link under **Tools** menu in your WordPress admin panel, named as "WP Quick Provision"
 
-![WP Quick Provision](https://www.dropbox.com/s/vot5fvkzdkyj4at/wp-quick-provision.jpg?dl=1)
-
 ## Frequently Asked Questions
 
 ### is there any risk of losing my data 
