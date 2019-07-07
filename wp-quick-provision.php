@@ -25,12 +25,10 @@ add_action( 'admin_menu', function () {
 	add_submenu_page( 'tools.php',
 		__( 'WP Quick Provision', 'wp-quick-provision' ),
 		__( 'Quick Provision', 'wp-quick-provision' ),
-		apply_filters( 'wpqp_capability', 'manage_options' ),
+        'manage_options',
 		'wpqp',
 		function () {
 			$wpqp_proceed = true;
-			include_once( ABSPATH . 'wp-admin/includes/theme.php' );
-			include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 			include_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
 
 			?>
