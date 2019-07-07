@@ -179,18 +179,21 @@ add_action( 'admin_menu', function () {
 } );
 
 add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), function ( $links ) {
+    //add a new action link as 'provision now' under the plugin name
 	array_unshift( $links, sprintf( "<a href='%s'><strong style='color: #ff631d; display: inline;'>%s</strong></a>", admin_url( 'tools.php?page=wpqp' ), __( 'Provision Now', 'wp-quick-provision' ) ) );
 
 	return $links;
 } );
 
 add_action( 'activated_plugin', function ( $plugin ) {
+    //redirect the user to the quick provision page after activation
 	if ( plugin_basename( __FILE__ ) == $plugin ) {
 		exit( wp_redirect( admin_url( 'tools.php?page=wpqp' ) ) );
 	}
 } );
 
 add_filter( 'plugin_row_meta', function ( $links, $file ) {
+    //add two links under the description section
 	if ( plugin_basename( __FILE__ ) == $file ) {
 		array_push( $links, sprintf( "<a href='%s' target='_blank'>%s</a>", esc_url( 'https://github.com/hasinhayder/wp-quick-provision' ), __( 'Fork on Github', 'wp-quick-provision' ) ) );
 		array_push( $links, sprintf( "<a href='%s' target='_blank'>%s</a>", esc_url( 'https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306' ), __( 'Sample data', 'wp-quick-provision' ) ) );
