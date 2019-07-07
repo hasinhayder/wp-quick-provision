@@ -37,10 +37,13 @@ add_action( 'admin_menu', function () {
 
                 <form method="POST" class="wpqp_form">
 					<?php wp_nonce_field( 'wpqp_provision', 'wpqp_nonce' ); ?>
-                    <label for="gist"><strong><?php _e( 'Gist URL', 'wp-quick-provision' ); ?></strong></label><br/>
+                    <label for="gist">
+                        <strong><?php _e( 'Gist URL', 'wp-quick-provision' ); ?></strong>
+                    </label><br/>
                     <input type="text" name="gist" id="gist" class="wpqp_text"
                            placeholder="<?php _e( 'Gist URL with Provision Data', 'wp-quick-provision' ); ?>"/><br/>
-                    <p class="description">Sample Gist URL: <a
+                    <p class="description">
+						<?php _e( 'Sample Gist URL', 'wp-quick-provision' ); ?>: <a
                                 href="https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306"
                                 target="_blank">https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306</a>
                     </p>
@@ -52,7 +55,9 @@ add_action( 'admin_menu', function () {
 								$wpqp_proceed = false;
 								?>
                                 <div class="wpqp_info wpqp_error" style="margin-left: 1px;">
-                                    <p><?php _e( "Invalid gist URL", 'wp-quick-provision' ); ?></p>
+                                    <p>
+										<?php _e( "Invalid gist URL", 'wp-quick-provision' ); ?>
+                                    </p>
                                 </div>
 								<?php
 							}
@@ -83,10 +88,12 @@ add_action( 'admin_menu', function () {
 										if ( ! array_key_exists( $wpqp__theme, $wpqp_installed_themes ) ) {
 											?>
                                             <div class="wpqp_info wpqp_success">
-                                                <p><?php printf( __( "<strong>Installing theme %s</strong>", 'wp-quick-provision' ), esc_html( $wpqp__theme ) ); ?></p>
+                                                <p>
+													<?php printf( __( "<strong>Installing theme %s</strong>", 'wp-quick-provision' ), esc_html( $wpqp__theme ) ); ?>
+                                                </p>
                                                 <p>
 													<?php
-													$wpqp_theme_installer->install( esc_url( 'https://downloads.wordpress.org/theme/' .  $wpqp__theme  . '.latest-stable.zip' ) );
+													$wpqp_theme_installer->install( esc_url( 'https://downloads.wordpress.org/theme/' . $wpqp__theme . '.latest-stable.zip' ) );
 													?>
                                                 </p>
                                             </div>
@@ -95,7 +102,9 @@ add_action( 'admin_menu', function () {
 										} else {
 											?>
                                             <div class="wpqp_info wpqp_error">
-                                                <p><?php printf( __( "Theme <strong>%s</strong> is already installed", 'wp-quick-provision' ), esc_html( $wpqp__theme ) ); ?></p>
+                                                <p>
+                                                    <?php printf( __( "Theme <strong>%s</strong> is already installed", 'wp-quick-provision' ), esc_html( $wpqp__theme ) ); ?>
+                                                </p>
                                             </div>
 											<?php
 										}
@@ -114,7 +123,9 @@ add_action( 'admin_menu', function () {
 										if ( ! array_key_exists( $wpqp__plugin, $wpqp_installed_plugins ) ) {
 											?>
                                             <div class="wpqp_info wpqp_success">
-                                                <p><?php printf( __( "<strong>Installing plugin %s</strong>", 'wp-quick-provision' ), esc_html( $wpqp__plugin ) ); ?></p>
+                                                <p>
+													<?php printf( __( "<strong>Installing plugin %s</strong>", 'wp-quick-provision' ), esc_html( $wpqp__plugin ) ); ?>
+                                                </p>
                                                 <p>
 													<?php
 													$wpqp_plugin_installer->install( esc_url( 'https://downloads.wordpress.org/plugin/' . $wpqp__plugin . '.latest-stable.zip' ) );
@@ -126,7 +137,9 @@ add_action( 'admin_menu', function () {
 										} else {
 											?>
                                             <div class="wpqp_info wpqp_error">
-                                                <p><?php printf( __( 'Plugin <strong>%s</strong> is already installed', 'wp-quick-provision' ), esc_html( $wpqp__plugin ) ); ?></p>
+                                                <p>
+                                                    <?php printf( __( 'Plugin <strong>%s</strong> is already installed', 'wp-quick-provision' ), esc_html( $wpqp__plugin ) ); ?>
+                                                </p>
                                             </div>
 											<?php
 										}
@@ -143,13 +156,17 @@ add_action( 'admin_menu', function () {
 											activate_plugin( $wpqp_installed_plugins[ $wpqp__plugin ] );
 											?>
                                             <div class="wpqp_info wpqp_success">
-                                                <p><?php printf( __( "Plugin <strong>%s</strong> is activated <br/>", 'wp-quick-provision' ), esc_html( $wpqp__plugin ) ); ?></p>
+                                                <p>
+                                                    <?php printf( __( "Plugin <strong>%s</strong> is activated <br/>", 'wp-quick-provision' ), esc_html( $wpqp__plugin ) ); ?>
+                                                </p>
                                             </div>
 											<?php
 										} else {
 											?>
                                             <div class="wpqp_info wpqp_error">
-                                                <p><?php printf( __( "Plugin <strong>%s</strong> is already active<br/>", 'wp-quick-provision' ), esc_html( $wpqp__plugin ) ); ?></p>
+                                                <p>
+                                                    <?php printf( __( "Plugin <strong>%s</strong> is already active<br/>", 'wp-quick-provision' ), esc_html( $wpqp__plugin ) ); ?>
+                                                </p>
                                             </div>
 											<?php
 										}
