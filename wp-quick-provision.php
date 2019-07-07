@@ -33,14 +33,12 @@ add_action( 'admin_menu', function () {
 
 			?>
             <div class="wrap">
-                <h1><?php _e( 'WordPress Quick Provision', 'wp-quick-provision' ); ?></h1>
+                <h1><?php _e( 'Quickly Provision Your WordPress Setup', 'wp-quick-provision' ); ?></h1>
 
-                <form method="POST" style="margin-top: 20px;">
+                <form method="POST" class="wpqp_form">
 					<?php wp_nonce_field( 'wpqp_provision', 'wpqp_nonce' ); ?>
                     <label for="gist"><strong><?php _e( 'Gist URL', 'wp-quick-provision' ); ?></strong></label><br/>
-                    <input type="text" style="width:60%;font-size: 15px;margin-top:10px; line-height: 30px;"
-                           name="gist"
-                           id="gist"
+                    <input type="text" name="gist" id="gist" class="wpqp_text"
                            placeholder="<?php _e( 'Gist URL with Provision Data', 'wp-quick-provision' ); ?>"/><br/>
                     <p class="description">Sample Gist URL: <a
                                 href="https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306"
@@ -84,7 +82,7 @@ add_action( 'admin_menu', function () {
 										$wpqp__theme = strtolower( trim( $wpqp_theme ) );
 										if ( ! array_key_exists( $wpqp__theme, $wpqp_installed_themes ) ) {
 											?>
-                                            <div class="wpqp_info wpqp_success" style="margin-left: 1px;">
+                                            <div class="wpqp_info wpqp_success">
                                                 <p><?php printf( __( "<strong>Installing theme %s</strong>", 'wp-quick-provision' ), esc_html( $wpqp__theme ) ); ?></p>
                                                 <p>
 													<?php
@@ -96,7 +94,7 @@ add_action( 'admin_menu', function () {
 
 										} else {
 											?>
-                                            <div class="wpqp_info wpqp_error" style="margin-left: 1px;">
+                                            <div class="wpqp_info wpqp_error">
                                                 <p><?php printf( __( "Theme <strong>%s</strong> is already installed", 'wp-quick-provision' ), esc_html( $wpqp__theme ) ); ?></p>
                                             </div>
 											<?php
@@ -115,7 +113,7 @@ add_action( 'admin_menu', function () {
 										$wpqp__plugin = strtolower( trim( $wpqp_plugin ) );
 										if ( ! array_key_exists( $wpqp__plugin, $wpqp_installed_plugins ) ) {
 											?>
-                                            <div class="wpqp_info wpqp_success" style="margin-left: 1px;">
+                                            <div class="wpqp_info wpqp_success">
                                                 <p><?php printf( __( "<strong>Installing plugin %s</strong>", 'wp-quick-provision' ), esc_html( $wpqp__plugin ) ); ?></p>
                                                 <p>
 													<?php
@@ -127,7 +125,7 @@ add_action( 'admin_menu', function () {
 
 										} else {
 											?>
-                                            <div class="wpqp_info wpqp_error" style="margin-left: 1px;">
+                                            <div class="wpqp_info wpqp_error">
                                                 <p><?php printf( __( 'Plugin <strong>%s</strong> is already installed', 'wp-quick-provision' ), esc_html( $wpqp__plugin ) ); ?></p>
                                             </div>
 											<?php
@@ -144,13 +142,13 @@ add_action( 'admin_menu', function () {
 										if ( ! is_plugin_active( $wpqp_installed_plugins[ $wpqp__plugin ] ) ) {
 											activate_plugin( $wpqp_installed_plugins[ $wpqp__plugin ] );
 											?>
-                                            <div class="wpqp_info wpqp_success" style="margin-left: 1px;">
+                                            <div class="wpqp_info wpqp_success">
                                                 <p><?php printf( __( "Plugin <strong>%s</strong> is activated <br/>", 'wp-quick-provision' ), esc_html( $wpqp__plugin ) ); ?></p>
                                             </div>
 											<?php
 										} else {
 											?>
-                                            <div class="wpqp_info wpqp_error" style="margin-left: 1px;">
+                                            <div class="wpqp_info wpqp_error">
                                                 <p><?php printf( __( "Plugin <strong>%s</strong> is already active<br/>", 'wp-quick-provision' ), esc_html( $wpqp__plugin ) ); ?></p>
                                             </div>
 											<?php

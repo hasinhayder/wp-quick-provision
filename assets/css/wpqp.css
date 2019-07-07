@@ -1,23 +1,33 @@
-.wpqp_info{
+.wpqp_info {
     background: #fff;
     border-left: 4px solid #fff;
-    box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
-    margin: 5px 15px 2px;
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
+    margin: 5px 15px 2px 1px;
     padding: 1px 12px;
 }
 
-.wpqp_info h1{
+.wpqp_info h1 {
     display: none;
 }
 
-.wpqp_error{
+.wpqp_error {
     border-left-color: #dc3232;
 }
 
-.wpqp_success{
+.wpqp_success {
     border-left-color: #46b450;
 }
 
-.wpqp_warning{
+.wpqp_warning {
     border-left-color: #fedf00;
+}
+
+.wpqp_form{
+    margin-top:20px;
+}
+.wpqp_text {
+    width: 60%;
+    font-size: 15px;
+    margin-top: 10px;
+    line-height: 30px;
 }
