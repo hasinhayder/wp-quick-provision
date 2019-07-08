@@ -82,7 +82,6 @@ add_action( 'admin_menu', function () {
 
 							if ( isset( $wpqp_gist_body['themes'] ) ) {
 								$wpqp_themes = apply_filters( 'wpqp_themes', $wpqp_gist_body['themes'] );
-								array_push( $wpqp_themes, "yumyumyum" );
 								if ( count( $wpqp_themes ) > 0 ) {
 									echo '<h2>' . __( 'Installing Themes', 'wp-quick-provision' ) . '</h2>';
 									foreach ( $wpqp_themes as $wpqp_theme ) {
@@ -129,10 +128,6 @@ add_action( 'admin_menu', function () {
 
 								$wpqp_plugins      = apply_filters( 'wpqp_plugins', $wpqp_gist_body['plugins'] );
 								$wpqp_plugin_error = [];
-								array_push( $wpqp_plugins, '24liveblog' );
-								array_push( $wpqp_plugins, 'wp-spamshield' );
-								array_push( $wpqp_plugins, 'hello-dolly' );
-								array_push( $wpqp_plugins, 'litespeed-cache' );
 								if ( count( $wpqp_plugins ) > 0 ) {
 									echo '<h2>' . __( 'Installing Plugins', 'wp-quick-provision' ) . '</h2>';
 									foreach ( $wpqp_plugins as $wpqp_plugin ) {
