@@ -152,7 +152,7 @@ add_action( 'admin_menu', function () {
                                                 </div>
 												<?php
 											} else {
-												$wpqp_plugin_error[$wpqp__plugin] = true;
+												$wpqp_plugin_error[ $wpqp__plugin ] = true;
 												?>
                                                 <div class="wpqp_info wpqp_error">
                                                     <p>
@@ -180,7 +180,7 @@ add_action( 'admin_menu', function () {
 									echo '<h2>' . __( 'Activating Plugins', 'wp-quick-provision' ) . '</h2>';
 									foreach ( $wpqp_plugins as $wpqp_plugin ) {
 										$wpqp__plugin = strtolower( trim( $wpqp_plugin ) );
-										if(!isset($wpqp_plugin_error[$wpqp_plugin])) {
+										if ( ! isset( $wpqp_plugin_error[ $wpqp_plugin ] ) ) {
 											if ( ! is_plugin_active( $wpqp_installed_plugins[ $wpqp__plugin ] ) ) {
 												activate_plugin( $wpqp_installed_plugins[ $wpqp__plugin ] );
 												?>
@@ -267,7 +267,7 @@ function wpqp_process_keys( $wpqp_keys ) {
 
 
 function wpqp_is_okay_to_install( $wpqp_slug, $wpqp_type = 'theme' ) {
-    //check if the theme or plugin is in closed state in WordPress.org repository
+	//check if the theme or plugin is in closed state in WordPress.org repository
 	if ( 'theme' == $wpqp_type ) {
 		$wpqp_api_url = "https://api.wordpress.org/themes/info/1.2/?action=theme_information&request[slug]=" . sanitize_text_field( $wpqp_slug );
 	} else if ( 'plugin' == $wpqp_type ) {
