@@ -181,9 +181,9 @@ add_action( 'admin_menu', function () {
 
 									do_action( "wpqp_plugins_installed" );
 
-									$wpqp_installed_plugins = wpqp_process_keys( array_keys( get_plugins() ) );
-
 									echo '<h2>' . __( 'Activating Plugins', 'wp-quick-provision' ) . '</h2>';
+
+									$wpqp_installed_plugins = wpqp_process_keys( array_keys( get_plugins() ) );
 
 									foreach ( $wpqp_plugins as $wpqp_plugin ) {
 										$wpqp__plugin = strtolower( trim( $wpqp_plugin ) );
