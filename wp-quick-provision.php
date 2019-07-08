@@ -267,6 +267,7 @@ function wpqp_process_keys( $wpqp_keys ) {
 
 
 function wpqp_is_okay_to_install( $wpqp_slug, $wpqp_type = 'theme' ) {
+    //check if the theme or plugin is in closed state in WordPress.org repository
 	if ( 'theme' == $wpqp_type ) {
 		$wpqp_api_url = "https://api.wordpress.org/themes/info/1.2/?action=theme_information&request[slug]=" . sanitize_text_field( $wpqp_slug );
 	} else if ( 'plugin' == $wpqp_type ) {
