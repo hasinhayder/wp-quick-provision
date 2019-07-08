@@ -5,7 +5,7 @@ Plugin URI: https://github.com/hasinhayder/wp-quick-provision
 Description: This is a powerful provisioning plugin to install multiple themes and plugins automatically by providing them as a list from <a href='https://gist.github.com'>https://gist.github.com</a>. You can also update multiple options in your options table at once. This plugin can save your time from installing same set of themes and plugins again and again in your WordPress setup. Extremely handy to quickly setup your development platform.
 Version: 1.0
 Author: Hasin Hayder
-Author URI: https://hasin.me
+Author URI: https://provisionwp.com
 License: GPLv2 or later
 Text Domain: wp-quick-provision
 Domain Path: /languages/
@@ -55,7 +55,7 @@ add_action( 'admin_menu', function () {
 							if ( strpos( $wpqp_gist_url, "gist" ) === false ) {
 								$wpqp_proceed = false;
 								?>
-                                <div class="wpqp_info wpqp_error" style="margin-left: 1px;">
+                                <div class="wpqp_info wpqp_error">
                                     <p>
 										<?php _e( "Invalid gist URL", 'wp-quick-provision' ); ?>
                                     </p>
@@ -104,7 +104,7 @@ add_action( 'admin_menu', function () {
 												?>
                                                 <div class="wpqp_info wpqp_error">
                                                     <p>
-														<?php printf( __( "Theme <strong>%s</strong> is not available to install", 'wp-quick-provision' ), esc_html( $wpqp__theme ) ); ?>
+                                                        <?php printf( __( "Theme <strong>%s</strong> is not available to install", 'wp-quick-provision' ), esc_html( $wpqp__theme ) ); ?>
                                                     </p>
                                                 </div>
 												<?php
@@ -125,7 +125,6 @@ add_action( 'admin_menu', function () {
 							}
 
 							if ( isset( $wpqp_gist_body['plugins'] ) ) {
-
 								$wpqp_plugins      = apply_filters( 'wpqp_plugins', $wpqp_gist_body['plugins'] );
 								$wpqp_plugin_error = [];
 								if ( count( $wpqp_plugins ) > 0 ) {
@@ -181,7 +180,7 @@ add_action( 'admin_menu', function () {
 												?>
                                                 <div class="wpqp_info wpqp_success">
                                                     <p>
-														<?php printf( __( "Plugin <strong>%s</strong> is activated <br/>", 'wp-quick-provision' ), esc_html( $wpqp__plugin ) ); ?>
+														<?php printf( __( "Plugin <strong>%s</strong> is activated", 'wp-quick-provision' ), esc_html( $wpqp__plugin ) ); ?>
                                                     </p>
                                                 </div>
 												<?php
@@ -189,7 +188,7 @@ add_action( 'admin_menu', function () {
 												?>
                                                 <div class="wpqp_info wpqp_warning">
                                                     <p>
-														<?php printf( __( "Plugin <strong>%s</strong> is already active<br/>", 'wp-quick-provision' ), esc_html( $wpqp__plugin ) ); ?>
+														<?php printf( __( "Plugin <strong>%s</strong> is already active", 'wp-quick-provision' ), esc_html( $wpqp__plugin ) ); ?>
                                                     </p>
                                                 </div>
 												<?php
