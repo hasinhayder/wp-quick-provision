@@ -54,3 +54,8 @@ No, it only installs new themes and plugins and it doesn't delete any of your ex
 
 Make sure to set your php script execution time to 300 or more.
 
+## Changelog 
+
+### 1.1 
+1. Allow universal URL for provision data
+2. Another change.
