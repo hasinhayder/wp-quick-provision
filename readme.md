@@ -1,6 +1,6 @@
 # WP Quick Provision 
 
-This plugin cave save you from boredom and from doing the same tasks again and again you do after installing a fresh version of WordPress. You can provision your new setup by automatically installing themes and plugins using **WP Quick Provision** plugin, all by supplying a list of those themes and plugins from gist.github.com. Here is a valid data format that is required by this plugin to properly provision your WordPress installation.
+This plugin can save you from boredom and from doing the same tasks again and again you do after installing a fresh version of WordPress. You can provision your new setup by automatically installing themes and plugins using **WP Quick Provision** plugin, all by supplying a list of those themes and plugins from gist.github.com. Here is a valid data format that is required by this plugin to properly provision your WordPress installation.
 
 ```js
 {
