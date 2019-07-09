@@ -41,8 +41,7 @@ add_action( 'admin_menu', function () {
                         <strong><?php _e( 'Gist URL', 'wp-quick-provision' ); ?></strong>
                     </label><br/>
                     <input type="text" name="gist" id="gist" class="wpqp_text"
-                           placeholder="<?php _e( 'Gist URL with Provision Data', 'wp-quick-provision' ); ?>"
-                           value="http://mmxix.local.com/data.json"/>
+                           placeholder="<?php _e( 'Gist URL with Provision Data', 'wp-quick-provision' ); ?>"/>
                     <p class="description">
 						<?php _e( 'Sample Data URL', 'wp-quick-provision' ); ?>: <a
                                 href="https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306"
@@ -265,6 +264,7 @@ add_filter( 'plugin_row_meta', function ( $links, $file ) {
 }, 10, 2 );
 
 function wpqp_process_keys( $wpqp_keys ) {
+    //this function converts an indexed array to an associative array, for especially the installed plugins data which is return by wp_get_plugins()
 	$wpqp__keys = [];
 
 	foreach ( $wpqp_keys as $wpqp_key ) {
@@ -277,9 +277,9 @@ function wpqp_process_keys( $wpqp_keys ) {
 
 
 function wpqp_is_okay_to_install( $wpqp_item, $wpqp_type = 'theme' ) {
-
+	//this function checks if the theme or plugin is from wp.org and then if it is in closed state in the wp.org repository
+	//otherwise it checks if the item's external link is 404
 	if ( strpos( $wpqp_item['source'], "http" ) === false ) {
-		//check if the theme or plugin is in closed state in WordPress.org repository
 		if ( 'theme' == $wpqp_type ) {
 			$wpqp_api_url = "https://api.wordpress.org/themes/info/1.2/?action=theme_information&request[slug]=" . sanitize_text_field( $wpqp_item['source'] );
 		} else if ( 'plugin' == $wpqp_type ) {
@@ -292,7 +292,7 @@ function wpqp_is_okay_to_install( $wpqp_item, $wpqp_type = 'theme' ) {
 			return false;
 		}
 	} else {
-		//check if the theme or plugin is 404
+		//check if the item is 404
 		$wpqp_request = wp_remote_head( $wpqp_item['source'] );
 		if ( $wpqp_request['response']['code'] == 200 ) {
 			return true;
@@ -304,6 +304,7 @@ function wpqp_is_okay_to_install( $wpqp_item, $wpqp_type = 'theme' ) {
 }
 
 function wpqp_validate_provision_source( $url ) {
+	//this function checks if the provisioning url contains valid data format
 	$wpqp_remote_data = wp_remote_get( $url );
 	$wpqp_remote_body = json_decode( strtolower( $wpqp_remote_data['body'] ), true );
 	if ( isset( $wpqp_remote_body['themes'] ) || isset( $wpqp_remote_body['plugins'] ) ) {
@@ -314,7 +315,9 @@ function wpqp_validate_provision_source( $url ) {
 }
 
 function wpqp_process_provision_source_url( $url ) {
-	$url = strtolower( sanitize_text_field( $url ) );
+	//this function checks if the provision source is from gist, then adds /raw at the end of it
+	//otherwise returns the url as is
+	$url = trim( strtolower( sanitize_text_field( $url ) ) );
 	if ( strpos( $url, "gist.github.com" ) !== false ) {
 		$wpqp_url = trailingslashit( esc_url( $url ) ) . "raw";
 	} else {
@@ -325,11 +328,14 @@ function wpqp_process_provision_source_url( $url ) {
 }
 
 function wpqp_process_data( $items ) {
+	//this is kind of an adapter that transforms previous provisioning data format to new format
+	//old format = https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306
+	//new format = https://gist.github.com/hasinhayder/5cf59b883005e043454f5fe0d2d9546b
 	$wpqp_data = [];
 	foreach ( $items as $item ) {
 		if ( ! is_array( $item ) ) {
 			//it's just a key
-			$wpqp_data[ $item ] = [ 'source' => $item ];
+			$wpqp_data[ $item ] = [ 'source' => $item, 'slug' => $item ];
 		} else {
 			if ( isset( $item['source'] ) ) {
 				$wpqp_data[ $item['slug'] ] = $item;
@@ -345,6 +351,8 @@ function wpqp_process_data( $items ) {
 }
 
 function wpqp_get_item_url( $wpqp_item, $wpqp_item_type = 'theme' ) {
+	//this function returns latest stable urls for wp.org plugin or themes if the item has no external link set as source
+	//otherwise it returns the external source
 	if ( 'theme' == $wpqp_item_type ) {
 		if ( strpos( $wpqp_item['source'], "http" ) === false ) {
 			return esc_url( 'https://downloads.wordpress.org/theme/' . $wpqp_item['source'] . '.latest-stable.zip' );
