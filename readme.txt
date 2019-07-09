@@ -71,3 +71,17 @@ Make sure to set your php script execution time to 300 or more.
 = 1.1 =
 * Allow universal URL for provision data
 * Added wpqp_data_source filter for provision data url
+* Added support for external zip url, now you can pass data like this
+`
+{
+  "slug": "happy-elementor-addons",
+  "source": "happy-elementor-addons"
+}
+`
+or
+`
+{
+  "slug": "happy-elementor-addons",
+  "source": "https://downloads.wordpress.org/plugin/happy-elementor-addons.zip"
+}
+`

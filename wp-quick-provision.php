@@ -184,7 +184,6 @@ add_action( 'admin_menu', function () {
 									do_action( "wpqp_plugins_installed" );
 
 									echo '<h2>' . __( 'Activating Plugins', 'wp-quick-provision' ) . '</h2>';
-
 									$wpqp_installed_plugins = wpqp_process_keys( array_keys( get_plugins() ) );
 
 									foreach ( $wpqp_plugins as $wpqp_plugin => $wpqp_plugin_data ) {
@@ -211,7 +210,6 @@ add_action( 'admin_menu', function () {
 												<?php
 											}
 										}
-
 									}
 
 									do_action( "wpqp_plugins_activated" );
@@ -308,7 +306,6 @@ function wpqp_is_okay_to_install( $wpqp_item, $wpqp_type = 'theme' ) {
 function wpqp_validate_provision_source( $url ) {
 	$wpqp_remote_data = wp_remote_get( $url );
 	$wpqp_remote_body = json_decode( strtolower( $wpqp_remote_data['body'] ), true );
-	//print_r($wpqp_remote_body);
 	if ( isset( $wpqp_remote_body['themes'] ) || isset( $wpqp_remote_body['plugins'] ) ) {
 		return true;
 	}
