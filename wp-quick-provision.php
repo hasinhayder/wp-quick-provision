@@ -77,7 +77,7 @@ add_action( 'admin_menu', function () {
 					if ( wp_verify_nonce( sanitize_key( $_POST['wpqp_nonce'] ), 'wpqp_provision' ) ) {
 						$wpqp_theme_installer  = new Theme_Upgrader();
 						$wpqp_plugin_installer = new Plugin_Upgrader();
-						$wpqp_gist_mixed_data = wp_remote_get( $wpqp_gist_url );
+						$wpqp_gist_mixed_data  = wp_remote_get( $wpqp_gist_url );
 
 						if ( isset( $wpqp_gist_mixed_data['body'] ) && trim( $wpqp_gist_mixed_data['body'] ) != '' ) {
 							$wpqp_gist_body         = json_decode( strtolower( $wpqp_gist_mixed_data['body'] ), true );
@@ -311,5 +311,5 @@ function wpqp_process_url( $url ) {
 		$wpqp_url = esc_url( $url );
 	}
 
-	return $wpqp_url;
+	return apply_filters( "wpqp_data_source", $wpqp_url );
 }
