@@ -58,4 +58,4 @@ Make sure to set your php script execution time to 300 or more.
 
 ### 1.1 
 1. Allow universal URL for provision data
-2. Another change.
+2. Added wpqp_data_source filter for provision data url
