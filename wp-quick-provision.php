@@ -52,9 +52,9 @@ add_action( 'admin_menu', function () {
 					if ( isset( $_POST['submit'] ) ) {
 
 						if ( wp_verify_nonce( sanitize_key( $_POST['wpqp_nonce'] ), 'wpqp_provision' ) ) {
-							$wpqp_gist_url = wpqp_process_url( $_POST['gist'] );
+							$wpqp_provision_source_url = wpqp_process_url( $_POST['gist'] );
 
-							if ( ! wpqp_validate_data( $wpqp_gist_url ) ) {
+							if ( ! wpqp_validate_provision_source( $wpqp_provision_source_url ) ) {
 								$wpqp_proceed = false;
 								?>
                                 <div class="wpqp_info wpqp_error">
@@ -77,7 +77,7 @@ add_action( 'admin_menu', function () {
 					if ( wp_verify_nonce( sanitize_key( $_POST['wpqp_nonce'] ), 'wpqp_provision' ) ) {
 						$wpqp_theme_installer  = new Theme_Upgrader();
 						$wpqp_plugin_installer = new Plugin_Upgrader();
-						$wpqp_gist_mixed_data  = wp_remote_get( $wpqp_gist_url );
+						$wpqp_gist_mixed_data  = wp_remote_get( $wpqp_provision_source_url );
 
 						if ( isset( $wpqp_gist_mixed_data['body'] ) && trim( $wpqp_gist_mixed_data['body'] ) != '' ) {
 							$wpqp_gist_body         = json_decode( strtolower( $wpqp_gist_mixed_data['body'] ), true );
@@ -85,16 +85,18 @@ add_action( 'admin_menu', function () {
 							$wpqp_installed_plugins = wpqp_process_keys( array_keys( get_plugins() ) );
 
 							if ( isset( $wpqp_gist_body['themes'] ) ) {
-								$wpqp_themes = apply_filters( 'wpqp_themes', $wpqp_gist_body['themes'] );
+								$_wpqp_themes = apply_filters( 'wpqp_themes', $wpqp_gist_body['themes'] );
+								$wpqp_themes  = wpqp_process_data( $_wpqp_themes );
+								print_r( $wpqp_themes );
 
 								if ( count( $wpqp_themes ) > 0 ) {
 									echo '<h2>' . __( 'Installing Themes', 'wp-quick-provision' ) . '</h2>';
-									foreach ( $wpqp_themes as $wpqp_theme ) {
+									foreach ( $wpqp_themes as $wpqp_theme => $wpqp_theme_data ) {
 										$wpqp__theme = strtolower( trim( $wpqp_theme ) );
 
 										if ( ! array_key_exists( $wpqp__theme, $wpqp_installed_themes ) ) {
 
-											if ( wpqp_is_okay_to_install( $wpqp__theme ) ) {
+											if ( wpqp_is_okay_to_install( $wpqp__theme, $wpqp_theme_data, 'theme' ) ) {
 												?>
                                                 <div class="wpqp_info wpqp_success">
                                                     <p>
@@ -132,18 +134,19 @@ add_action( 'admin_menu', function () {
 							}
 
 							if ( isset( $wpqp_gist_body['plugins'] ) ) {
-								$wpqp_plugins      = apply_filters( 'wpqp_plugins', $wpqp_gist_body['plugins'] );
+								$_wpqp_plugins     = apply_filters( 'wpqp_plugins', $wpqp_gist_body['plugins'] );
+								$wpqp_plugins      = wpqp_process_data( $_wpqp_plugins );
 								$wpqp_plugin_error = [];
 
 								if ( count( $wpqp_plugins ) > 0 ) {
 									echo '<h2>' . __( 'Installing Plugins', 'wp-quick-provision' ) . '</h2>';
 
-									foreach ( $wpqp_plugins as $wpqp_plugin ) {
+									foreach ( $wpqp_plugins as $wpqp_plugin => $wpqp_plugin_data ) {
 										$wpqp__plugin = strtolower( trim( $wpqp_plugin ) );
 
 										if ( ! array_key_exists( $wpqp__plugin, $wpqp_installed_plugins ) ) {
 
-											if ( wpqp_is_okay_to_install( $wpqp__plugin, 'plugin' ) ) {
+											if ( wpqp_is_okay_to_install( $wpqp__plugin, $wpqp_plugin_data, 'plugin' ) ) {
 												?>
                                                 <div class="wpqp_info wpqp_success">
                                                     <p>
@@ -184,7 +187,7 @@ add_action( 'admin_menu', function () {
 
 									$wpqp_installed_plugins = wpqp_process_keys( array_keys( get_plugins() ) );
 
-									foreach ( $wpqp_plugins as $wpqp_plugin ) {
+									foreach ( $wpqp_plugins as $wpqp_plugin => $wpqp_plugin_data ) {
 										$wpqp__plugin = strtolower( trim( $wpqp_plugin ) );
 
 										if ( ! isset( $wpqp_plugin_error[ $wpqp_plugin ] ) ) {
@@ -275,24 +278,33 @@ function wpqp_process_keys( $wpqp_keys ) {
 }
 
 
-function wpqp_is_okay_to_install( $wpqp_slug, $wpqp_type = 'theme' ) {
-	//check if the theme or plugin is in closed state in WordPress.org repository
-	if ( 'theme' == $wpqp_type ) {
-		$wpqp_api_url = "https://api.wordpress.org/themes/info/1.2/?action=theme_information&request[slug]=" . sanitize_text_field( $wpqp_slug );
-	} else if ( 'plugin' == $wpqp_type ) {
-		$wpqp_api_url = "https://api.wordpress.org/plugins/info/1.2/?action=plugin_information&request[slug]=" . sanitize_text_field( $wpqp_slug );
-	}
-	$wpqp_request = wp_remote_get( $wpqp_api_url );
-	$wpqp_body    = json_decode( $wpqp_request['body'], true );
+function wpqp_is_okay_to_install( $wpqp_slug, $wpqp_data = null, $wpqp_type = 'theme' ) {
+	if ( ! $wpqp_data || strpos( $wpqp_data['source'], "wordpress.org" ) !== false || strpos( $wpqp_data['source'], "http" ) === false ) {
+		//check if the theme or plugin is in closed state in WordPress.org repository
+		if ( 'theme' == $wpqp_type ) {
+			$wpqp_api_url = "https://api.wordpress.org/themes/info/1.2/?action=theme_information&request[slug]=" . sanitize_text_field( $wpqp_slug );
+		} else if ( 'plugin' == $wpqp_type ) {
+			$wpqp_api_url = "https://api.wordpress.org/plugins/info/1.2/?action=plugin_information&request[slug]=" . sanitize_text_field( $wpqp_slug );
+		}
+		$wpqp_request = wp_remote_get( $wpqp_api_url );
+		$wpqp_body    = json_decode( $wpqp_request['body'], true );
 
-	if ( isset( $wpqp_body['error'] ) ) {
-		return false;
+		if ( isset( $wpqp_body['error'] ) ) {
+			return false;
+		}
+	} else {
+		//check if the theme or plugin is 404
+		$wpqp_request = wp_remote_head( $wpqp_data['source'], [ 'timeout' => 3 ] );
+		if ( $wpqp_request['response']['code'] == 200 ) {
+			return true;
+		}
 	}
+
 
 	return true;
 }
 
-function wpqp_validate_data( $url ) {
+function wpqp_validate_provision_source( $url ) {
 	$wpqp_remote_data = wp_remote_get( $url );
 	$wpqp_remote_body = json_decode( strtolower( $wpqp_remote_data['body'] ), true );
 	//print_r($wpqp_remote_body);
@@ -312,4 +324,18 @@ function wpqp_process_url( $url ) {
 	}
 
 	return apply_filters( "wpqp_data_source", $wpqp_url );
+}
+
+function wpqp_process_data( $items ) {
+	$wpqp_data = [];
+	foreach ( $items as $item_key => $item_data ) {
+		if ( is_numeric( $item_key ) ) {
+			//it's just a key
+			$wpqp_data[ $item_data ] = [ 'source' => $item_data ];
+		} else {
+			$wpqp_data[ $item_key ] = $item_data;
+		}
+	}
+
+	return $wpqp_data;
 }
