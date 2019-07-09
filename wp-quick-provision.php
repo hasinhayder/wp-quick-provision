@@ -41,7 +41,8 @@ add_action( 'admin_menu', function () {
                         <strong><?php _e( 'Gist URL', 'wp-quick-provision' ); ?></strong>
                     </label><br/>
                     <input type="text" name="gist" id="gist" class="wpqp_text"
-                           placeholder="<?php _e( 'Gist URL with Provision Data', 'wp-quick-provision' ); ?>"/><br/>
+                           placeholder="<?php _e( 'Gist URL with Provision Data', 'wp-quick-provision' ); ?>"
+                           value="http://mmxix.local.com/data.json"/>
                     <p class="description">
 						<?php _e( 'Sample Data URL', 'wp-quick-provision' ); ?>: <a
                                 href="https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306"
@@ -52,7 +53,7 @@ add_action( 'admin_menu', function () {
 					if ( isset( $_POST['submit'] ) ) {
 
 						if ( wp_verify_nonce( sanitize_key( $_POST['wpqp_nonce'] ), 'wpqp_provision' ) ) {
-							$wpqp_provision_source_url = wpqp_process_url( $_POST['gist'] );
+							$wpqp_provision_source_url = wpqp_process_provision_source_url( $_POST['gist'] );
 
 							if ( ! wpqp_validate_provision_source( $wpqp_provision_source_url ) ) {
 								$wpqp_proceed = false;
@@ -87,7 +88,6 @@ add_action( 'admin_menu', function () {
 							if ( isset( $wpqp_gist_body['themes'] ) ) {
 								$_wpqp_themes = apply_filters( 'wpqp_themes', $wpqp_gist_body['themes'] );
 								$wpqp_themes  = wpqp_process_data( $_wpqp_themes );
-								print_r( $wpqp_themes );
 
 								if ( count( $wpqp_themes ) > 0 ) {
 									echo '<h2>' . __( 'Installing Themes', 'wp-quick-provision' ) . '</h2>';
@@ -96,7 +96,7 @@ add_action( 'admin_menu', function () {
 
 										if ( ! array_key_exists( $wpqp__theme, $wpqp_installed_themes ) ) {
 
-											if ( wpqp_is_okay_to_install( $wpqp__theme, $wpqp_theme_data, 'theme' ) ) {
+											if ( wpqp_is_okay_to_install( $wpqp_theme_data, 'theme' ) ) {
 												?>
                                                 <div class="wpqp_info wpqp_success">
                                                     <p>
@@ -104,7 +104,7 @@ add_action( 'admin_menu', function () {
                                                     </p>
                                                     <p>
 														<?php
-														$wpqp_theme_installer->install( esc_url( 'https://downloads.wordpress.org/theme/' . $wpqp__theme . '.latest-stable.zip' ) );
+														$wpqp_theme_installer->install( wpqp_get_item_url( $wpqp_theme_data ) );
 														?>
                                                     </p>
                                                 </div>
@@ -146,7 +146,7 @@ add_action( 'admin_menu', function () {
 
 										if ( ! array_key_exists( $wpqp__plugin, $wpqp_installed_plugins ) ) {
 
-											if ( wpqp_is_okay_to_install( $wpqp__plugin, $wpqp_plugin_data, 'plugin' ) ) {
+											if ( wpqp_is_okay_to_install( $wpqp_plugin_data, 'plugin' ) ) {
 												?>
                                                 <div class="wpqp_info wpqp_success">
                                                     <p>
@@ -154,7 +154,7 @@ add_action( 'admin_menu', function () {
                                                     </p>
                                                     <p>
 														<?php
-														$wpqp_plugin_installer->install( esc_url( 'https://downloads.wordpress.org/plugin/' . $wpqp__plugin . '.latest-stable.zip' ) );
+														$wpqp_plugin_installer->install( wpqp_get_item_url( $wpqp_plugin_data, 'plugin' ) );
 														?>
                                                     </p>
                                                 </div>
@@ -278,13 +278,18 @@ function wpqp_process_keys( $wpqp_keys ) {
 }
 
 
-function wpqp_is_okay_to_install( $wpqp_slug, $wpqp_data = null, $wpqp_type = 'theme' ) {
-	if ( ! $wpqp_data || strpos( $wpqp_data['source'], "wordpress.org" ) !== false || strpos( $wpqp_data['source'], "http" ) === false ) {
+function wpqp_is_okay_to_install( $wpqp_item, $wpqp_type = 'theme' ) {
+	$item_source = "internal";
+	if ( strpos( $wpqp_item['source'], "://downloads.wordpress.org" ) === false ) {
+		$item_source = "external";
+	}
+
+	if ( "internal" == $item_source ) {
 		//check if the theme or plugin is in closed state in WordPress.org repository
 		if ( 'theme' == $wpqp_type ) {
-			$wpqp_api_url = "https://api.wordpress.org/themes/info/1.2/?action=theme_information&request[slug]=" . sanitize_text_field( $wpqp_slug );
+			$wpqp_api_url = "https://api.wordpress.org/themes/info/1.2/?action=theme_information&request[slug]=" . sanitize_text_field( $wpqp_item['source'] );
 		} else if ( 'plugin' == $wpqp_type ) {
-			$wpqp_api_url = "https://api.wordpress.org/plugins/info/1.2/?action=plugin_information&request[slug]=" . sanitize_text_field( $wpqp_slug );
+			$wpqp_api_url = "https://api.wordpress.org/plugins/info/1.2/?action=plugin_information&request[slug]=" . sanitize_text_field( $wpqp_item['source'] );
 		}
 		$wpqp_request = wp_remote_get( $wpqp_api_url );
 		$wpqp_body    = json_decode( $wpqp_request['body'], true );
@@ -294,7 +299,7 @@ function wpqp_is_okay_to_install( $wpqp_slug, $wpqp_data = null, $wpqp_type = 't
 		}
 	} else {
 		//check if the theme or plugin is 404
-		$wpqp_request = wp_remote_head( $wpqp_data['source'], [ 'timeout' => 3 ] );
+		$wpqp_request = wp_remote_head( $wpqp_item['source'], [ 'timeout' => 3 ] );
 		if ( $wpqp_request['response']['code'] == 200 ) {
 			return true;
 		}
@@ -307,7 +312,6 @@ function wpqp_is_okay_to_install( $wpqp_slug, $wpqp_data = null, $wpqp_type = 't
 function wpqp_validate_provision_source( $url ) {
 	$wpqp_remote_data = wp_remote_get( $url );
 	$wpqp_remote_body = json_decode( strtolower( $wpqp_remote_data['body'] ), true );
-	//print_r($wpqp_remote_body);
 	if ( isset( $wpqp_remote_body['themes'] ) || isset( $wpqp_remote_body['plugins'] ) ) {
 		return true;
 	}
@@ -315,7 +319,7 @@ function wpqp_validate_provision_source( $url ) {
 	return false;
 }
 
-function wpqp_process_url( $url ) {
+function wpqp_process_provision_source_url( $url ) {
 	$url = strtolower( sanitize_text_field( $url ) );
 	if ( strpos( $url, "gist.github.com" ) !== false ) {
 		$wpqp_url = trailingslashit( esc_url( $url ) ) . "raw";
@@ -328,14 +332,36 @@ function wpqp_process_url( $url ) {
 
 function wpqp_process_data( $items ) {
 	$wpqp_data = [];
-	foreach ( $items as $item_key => $item_data ) {
-		if ( is_numeric( $item_key ) ) {
+	foreach ( $items as $item ) {
+		if ( ! is_array( $item ) ) {
 			//it's just a key
-			$wpqp_data[ $item_data ] = [ 'source' => $item_data ];
+			$wpqp_data[ $item ] = [ 'source' => $item ];
 		} else {
-			$wpqp_data[ $item_key ] = $item_data;
+			if ( isset( $item['source'] ) ) {
+				$wpqp_data[ $item['slug'] ] = $item;
+			} else {
+				$item['source']             = $item['slug'];
+				$wpqp_data[ $item['slug'] ] = $item;
+			}
 		}
 	}
 
+
 	return $wpqp_data;
+}
+
+function wpqp_get_item_url( $wpqp_item, $wpqp_item_type = 'theme' ) {
+	if ( 'theme' == $wpqp_item_type ) {
+		if ( strpos( $wpqp_item['source'], "://downloads.wordpress.org" ) === false && strpos( $wpqp_item['source'], "http" ) === false ) {
+			return esc_url( 'https://downloads.wordpress.org/theme/' . $wpqp_item['source'] . '.latest-stable.zip' );
+		} else {
+			return esc_url( $wpqp_item['source'] );
+		}
+	} else if ( 'plugin' == $wpqp_item_type ) {
+		if ( strpos( $wpqp_item['source'], "://downloads.wordpress.org" ) === false && strpos( $wpqp_item['source'], "http" ) === false ) {
+			return esc_url( 'https://downloads.wordpress.org/plugin/' . $wpqp_item['source'] . '.latest-stable.zip' );
+		} else {
+			return esc_url( $wpqp_item['source'] );
+		}
+	}
 }
