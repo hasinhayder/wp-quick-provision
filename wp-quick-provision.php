@@ -43,7 +43,7 @@ add_action( 'admin_menu', function () {
                     <input type="text" name="gist" id="gist" class="wpqp_text"
                            placeholder="<?php _e( 'Gist URL with Provision Data', 'wp-quick-provision' ); ?>"/><br/>
                     <p class="description">
-						<?php _e( 'Sample Gist URL', 'wp-quick-provision' ); ?>: <a
+						<?php _e( 'Sample Data URL', 'wp-quick-provision' ); ?>: <a
                                 href="https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306"
                                 target="_blank">https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306</a>
                     </p>
@@ -52,14 +52,14 @@ add_action( 'admin_menu', function () {
 					if ( isset( $_POST['submit'] ) ) {
 
 						if ( wp_verify_nonce( sanitize_key( $_POST['wpqp_nonce'] ), 'wpqp_provision' ) ) {
-							$wpqp_gist_url = strtolower( sanitize_text_field( $_POST['gist'] ) );
+							$wpqp_gist_url = wpqp_process_url( $_POST['gist'] );
 
-							if ( strpos( $wpqp_gist_url, "gist" ) === false ) {
+							if ( ! wpqp_validate_data( $wpqp_gist_url ) ) {
 								$wpqp_proceed = false;
 								?>
                                 <div class="wpqp_info wpqp_error">
                                     <p>
-										<?php _e( "Invalid gist URL", 'wp-quick-provision' ); ?>
+										<?php _e( "Invalid Data URL", 'wp-quick-provision' ); ?>
                                     </p>
                                 </div>
 								<?php
@@ -77,8 +77,7 @@ add_action( 'admin_menu', function () {
 					if ( wp_verify_nonce( sanitize_key( $_POST['wpqp_nonce'] ), 'wpqp_provision' ) ) {
 						$wpqp_theme_installer  = new Theme_Upgrader();
 						$wpqp_plugin_installer = new Plugin_Upgrader();
-						$wpqp_gist_url         = trailingslashit( esc_url( $_POST['gist'] ) ) . "raw";
-						$wpqp_gist_mixed_data  = wp_remote_get( $wpqp_gist_url );
+						$wpqp_gist_mixed_data = wp_remote_get( $wpqp_gist_url );
 
 						if ( isset( $wpqp_gist_mixed_data['body'] ) && trim( $wpqp_gist_mixed_data['body'] ) != '' ) {
 							$wpqp_gist_body         = json_decode( strtolower( $wpqp_gist_mixed_data['body'] ), true );
@@ -291,4 +290,26 @@ function wpqp_is_okay_to_install( $wpqp_slug, $wpqp_type = 'theme' ) {
 	}
 
 	return true;
+}
+
+function wpqp_validate_data( $url ) {
+	$wpqp_remote_data = wp_remote_get( $url );
+	$wpqp_remote_body = json_decode( strtolower( $wpqp_remote_data['body'] ), true );
+	//print_r($wpqp_remote_body);
+	if ( isset( $wpqp_remote_body['themes'] ) || isset( $wpqp_remote_body['plugins'] ) ) {
+		return true;
+	}
+
+	return false;
+}
+
+function wpqp_process_url( $url ) {
+	$url = strtolower( sanitize_text_field( $url ) );
+	if ( strpos( $url, "gist.github.com" ) !== false ) {
+		$wpqp_url = trailingslashit( esc_url( $url ) ) . "raw";
+	} else {
+		$wpqp_url = esc_url( $url );
+	}
+
+	return $wpqp_url;
 }
