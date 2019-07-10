@@ -5,15 +5,14 @@ This plugin can save you from boredom and from doing the same tasks again and ag
 ```js
 {
     "themes": [
-        "astra",
         "hello-elementor",
         "wp-bootstrap-starter"
     ],
     "plugins": [
-        "contact-form-7",
-        "woocommerce",
         "elementor",
         "happy-elementor-addons",
+        "contact-form-7",
+        "woocommerce",
         "query-monitor",
         "regenerate-thumbnails",
         "classic-editor",
