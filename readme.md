@@ -22,7 +22,7 @@ This plugin can save you from boredom and from doing the same tasks again and ag
 }
 ```
 
-URL: https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306
+Provision Data URL: https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306 or https://gist.github.com/hasinhayder/5cf59b883005e043454f5fe0d2d9546b
 
 As soon as you save this data on gist.github.com and add tis gist url in your plugin, it will start installing all these themes and plugins mentioned in your data. It will not download a plugin if it is already available in your WordPress setup.
 
