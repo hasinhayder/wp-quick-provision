@@ -57,6 +57,9 @@ Make sure to set your php script execution time to 300 or more.
 
 ## Changelog 
 
+### 2.0.2
+* Minor UI Improvements
+
 ### 2.0.1
 * URl validation fix
 
