@@ -22,7 +22,7 @@ add_action( 'plugins_loaded', function () {
 
 add_action( 'admin_enqueue_scripts', function ( $hook ) {
 	if ( "tools_page_wpqp" == $hook ) {
-		wp_enqueue_style( 'wpqp-style', plugin_dir_url( __FILE__ ) . "assets/css/wpqp.css", null, time() );
+		wp_enqueue_style( 'wpqp-style', plugin_dir_url( __FILE__ ) . "assets/css/wpqp.css");
 	}
 } );
 
