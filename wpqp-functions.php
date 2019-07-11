@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package wp_quick_provision
+ */
+
 function wpqp_process_keys( $wpqp_keys ) {
 	//this function converts an indexed array to an associative array, for especially the installed plugins data which is return by wp_get_plugins()
 	$wpqp__keys = [];
@@ -41,9 +45,11 @@ function wpqp_is_okay_to_install( $wpqp_item, $wpqp_type = 'theme' ) {
 function wpqp_validate_provision_source( $url ) {
 	//this function checks if the provisioning url contains valid data format
 	$wpqp_remote_data = wp_remote_get( $url );
-	$wpqp_remote_body = json_decode( strtolower( $wpqp_remote_data['body'] ), true );
-	if ( isset( $wpqp_remote_body['themes'] ) || isset( $wpqp_remote_body['plugins'] ) ) {
-		return true;
+	if(is_array($wpqp_remote_data)) {
+		$wpqp_remote_body = json_decode( strtolower( $wpqp_remote_data['body'] ), true );
+		if ( isset( $wpqp_remote_body['themes'] ) || isset( $wpqp_remote_body['plugins'] ) ) {
+			return true;
+		}
 	}
 
 	return false;
@@ -73,7 +79,11 @@ function wpqp_process_data( $items, $items_type = 'theme' ) {
 			$wpqp_data[ $item ]                = [ 'source' => $item, 'slug' => $item, 'origin' => 'internal' ];
 			$wpqp_data[ $item ]['installable'] = wpqp_get_item_url( $wpqp_data[ $item ], $items_type );
 		} else {
-			$wpqp_data[ $item['slug'] ] = [ 'source' => $item['slug'], 'slug' => $item['slug'], 'origin' => 'internal' ];
+			$wpqp_data[ $item['slug'] ] = [
+				'source' => $item['slug'],
+				'slug'   => $item['slug'],
+				'origin' => 'internal'
+			];
 			if ( isset( $item['source'] ) ) {
 				if ( strpos( $item['source'], "http" ) === false ) {
 					$wpqp_data[ $item['slug'] ]['origin'] = 'internal';
@@ -85,7 +95,7 @@ function wpqp_process_data( $items, $items_type = 'theme' ) {
 				$wpqp_data[ $item['slug'] ]           = $item;
 				$wpqp_data[ $item['slug'] ]['origin'] = 'internal';
 			}
-			$wpqp_data[ $item['slug']]['installable']  = wpqp_get_item_url( $wpqp_data[ $item['slug'] ], $items_type );;
+			$wpqp_data[ $item['slug'] ]['installable'] = wpqp_get_item_url( $wpqp_data[ $item['slug'] ], $items_type );;
 		}
 
 	}

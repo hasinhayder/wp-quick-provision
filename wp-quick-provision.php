@@ -9,6 +9,8 @@ Author URI: https://provisionwp.com
 License: GPLv2 or later
 Text Domain: wp-quick-provision
 Domain Path: /languages/
+
+@package wp_quick_provision
 */
 
 require_once "wpqp-functions.php";
@@ -20,7 +22,7 @@ add_action( 'plugins_loaded', function () {
 
 add_action( 'admin_enqueue_scripts', function ( $hook ) {
 	if ( "tools_page_wpqp" == $hook ) {
-		wp_enqueue_style( 'wpqp-style', plugin_dir_url( __FILE__ ) . "assets/css/wpqp.css" );
+		wp_enqueue_style( 'wpqp-style', plugin_dir_url( __FILE__ ) . "assets/css/wpqp.css", null, time() );
 	}
 } );
 
@@ -31,104 +33,125 @@ add_action( 'admin_menu', function () {
 		'manage_options',
 		'wpqp',
 		function () {
+
+			//check if the URL is valid
+			if ( isset( $_POST['submit'] ) && ( trim( $_POST['gist'] ) == '' || ! wpqp_validate_provision_source( esc_url( $_POST['gist'] ) ) ) ) {
+				wp_redirect( admin_url( 'tools.php?page=wpqp' ) );
+				die();
+			}
+
 			$wpqp_proceed = true;
 			include_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
 			?>
             <div class="wrap wpqp">
                 <h1><?php _e( 'Quickly Provision Your WordPress Setup', 'wp-quick-provision' ); ?></h1>
-                <form method="POST" class="wpqp_form">
-					<?php wp_nonce_field( 'wpqp_provision', 'wpqp_nonce' ); ?>
-					<?php
-
-					if ( ! isset( $_POST['submit'] ) ) {
-						?>
-                        <label for="gist">
-                            <strong><?php _e( 'Gist URL', 'wp-quick-provision' ); ?></strong>
-                        </label><br/>
-                        <input type="text" name="gist" id="gist" class="wpqp_text"
-                               placeholder="<?php _e( 'Gist URL with Provision Data', 'wp-quick-provision' ); ?>"/>
-                        <p class="description">
-							<?php _e( 'Sample Data URL', 'wp-quick-provision' ); ?>: <a
-                                    href="https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306"
-                                    target="_blank">https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306</a>
-                        </p>
-						<?php
-					}
-
-					if ( isset( $_POST['submit'] ) ) {
-
-						if ( wp_verify_nonce( sanitize_key( $_POST['wpqp_nonce'] ), 'wpqp_provision' ) ) {
-							?>
-                            <input type="hidden" name="gist"
-                                   value="<?php echo esc_url( $_POST['gist'] ); ?>"/>
-                            <input type="hidden" name="proceed" value="hellyeah"/>
+                <form method="POST" class="wpqp_form <?php if ( isset( $_POST['proceed'] ) ) {
+					echo 'wpqp_hide';
+				} ?>">
+                    <div class="wpqp_box">
+                        <div class="wpqp_box_header">
+							<?php _e( "Provision Data" ) ?>
+                        </div>
+                        <div class="wpqp_box_content">
+							<?php wp_nonce_field( 'wpqp_provision', 'wpqp_nonce' ); ?>
 							<?php
-							$wpqp_provision_source_url = wpqp_process_provision_source_url( $_POST['gist'] );
-							$wpqp_gist_mixed_data      = wp_remote_get( $wpqp_provision_source_url );
-							$wpqp_gist_body            = json_decode( strtolower( $wpqp_gist_mixed_data['body'] ), true );
 
-							if ( ! wpqp_validate_provision_source( $wpqp_provision_source_url ) ) {
-								$wpqp_proceed = false;
+							if ( ! isset( $_POST['submit'] ) ) {
 								?>
-                                <div class="wpqp_info wpqp_error">
-                                    <p>
-										<?php _e( "Invalid Data URL", 'wp-quick-provision' ); ?>
-                                    </p>
-                                </div>
+                                <label for="gist">
+                                    <strong><?php _e( 'Gist URL', 'wp-quick-provision' ); ?></strong>
+                                </label><br/>
+                                <input type="url" name="gist" id="gist" class="wpqp_text" required
+                                       placeholder="<?php _e( 'Gist URL with Provision Data', 'wp-quick-provision' ); ?>"/>
+                                <p class="description">
+									<?php _e( 'Sample Data URL', 'wp-quick-provision' ); ?>: <a
+                                            href="https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306"
+                                            target="_blank">https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306</a>
+                                </p>
 								<?php
 							}
 
-							if ( ! isset( $_POST['proceed'] ) ) {
+							if ( isset( $_POST['submit'] ) ) {
 
-								if ( isset( $wpqp_gist_body['themes'] ) ) {
-									$_wpqp_themes = apply_filters( 'wpqp_themes', $wpqp_gist_body['themes'] );
-									$wpqp_themes  = wpqp_process_data( $_wpqp_themes );
+								if ( wp_verify_nonce( sanitize_key( $_POST['wpqp_nonce'] ), 'wpqp_provision' ) ) {
+									?>
+                                    <input type="hidden" name="gist"
+                                           value="<?php echo esc_url( $_POST['gist'] ); ?>"/>
+                                    <input type="hidden" name="proceed" value="hellyeah"/>
+									<?php
+									$wpqp_provision_source_url = wpqp_process_provision_source_url( $_POST['gist'] );
+									$wpqp_gist_mixed_data      = wp_remote_get( $wpqp_provision_source_url );
+									$wpqp_gist_body            = json_decode( strtolower( $wpqp_gist_mixed_data['body'] ), true );
 
-									_e( '<h2>Installing the following themes</h2>', 'wp-quick-provision' );
-									$wpqp_themes_table = new WPQP_Table( $wpqp_themes, 'themes' );
-									$wpqp_themes_table->prepare_items();
-									$wpqp_themes_table->display();
+									if ( ! wpqp_validate_provision_source( $wpqp_provision_source_url ) ) {
+										$wpqp_proceed = false;
+										?>
+                                        <div class="wpqp_info wpqp_error">
+                                            <p>
+												<?php _e( "Invalid Data URL", 'wp-quick-provision' ); ?>
+                                            </p>
+                                        </div>
+										<?php
+									}
+
+									if ( ! isset( $_POST['proceed'] ) ) {
+
+										if ( isset( $wpqp_gist_body['themes'] ) ) {
+											$_wpqp_themes = apply_filters( 'wpqp_themes', $wpqp_gist_body['themes'] );
+											$wpqp_themes  = wpqp_process_data( $_wpqp_themes );
+
+											_e( '<h2>Installing the following themes</h2>', 'wp-quick-provision' );
+											echo '<p class="info">' . __( 'Following is a list of themes we fetched from your provision data url. It contains items from WordPress.org theme repository as well as externally hosted items. If you are not sure to install any of these items, simply uncheck them and they will not be installed. Just for your reference, the provision data url was ', 'wp-quick-provision' ) . sprintf( '<a href="%1$s" target="_blank">%1$s</a>', esc_url( $_POST['gist'] ) ) . '</p>';
+											$wpqp_themes_table = new WPQP_Table( $wpqp_themes, 'themes' );
+											$wpqp_themes_table->prepare_items();
+											$wpqp_themes_table->display();
+										}
+
+										if ( isset( $wpqp_gist_body['plugins'] ) ) {
+											$_wpqp_plugins = apply_filters( 'wpqp_plugins', $wpqp_gist_body['plugins'] );
+											$wpqp_plugins  = wpqp_process_data( $_wpqp_plugins );
+
+											_e( '<h2>Installing the following plugins</h2>', 'wp-quick-provision' );
+											echo '<p class="info">' . __( 'If you uncheck any item, it will not be installed.', 'wp-quick-provision' ) . '</p>';
+											$wpqp_plugins_table = new WPQP_Table( $wpqp_plugins, 'plugins' );
+											$wpqp_plugins_table->prepare_items();
+											$wpqp_plugins_table->display();
+										}
+
+										$wpqp_proceed = false;
+									}
 								}
-
-								if ( isset( $wpqp_gist_body['plugins'] ) ) {
-									$_wpqp_plugins = apply_filters( 'wpqp_plugins', $wpqp_gist_body['plugins'] );
-									$wpqp_plugins  = wpqp_process_data( $_wpqp_plugins );
-
-									_e( '<h2>Installing the following plugins</h2>', 'wp-quick-provision' );
-									$wpqp_plugins_table = new WPQP_Table( $wpqp_plugins, 'plugins' );
-									$wpqp_plugins_table->prepare_items();
-									$wpqp_plugins_table->display();
-								}
-
-								$wpqp_proceed = false;
 							}
-						}
-					}
 
+							?>
+                            <p>
+								<?php
+								if ( ! isset( $_POST['submit'] ) ) {
+									echo submit_button( __( 'Process Provisioning Data', 'wp-quick-provision' ), 'primary wpqp_large_button', 'submit', false );
+								} else {
+									if ( ! isset( $_POST['proceed'] ) ) {
+										echo submit_button( __( 'Start Provisioning', 'wp-quick-provision' ), 'primary wpqp_large_button', 'submit', false );
+										?>
+                                        <a href="<?php echo admin_url( 'tools.php?page=wpqp' ); ?>"
+                                           class="button button-action wpqp_large_button"><?php _e( 'Cancel Provisioning', 'wpqp_provision' ) ?></a>
+										<?php
+									}
+								}
+								?>
+                            </p>
+                        </div>
+                    </div>
+                </form>
+				<?php
+				if ( isset( $_POST['proceed'] ) ) {
 					?>
                     <p>
-						<?php
-						if ( ! isset( $_POST['submit'] ) ) {
-							echo submit_button( __( 'Process Provisioning Data', 'wp-quick-provision' ), 'primary', 'submit', false );
-						} else {
-							if ( ! isset( $_POST['proceed'] ) ) {
-								echo submit_button( __( 'Start Provisioning', 'wp-quick-provision' ), 'primary', 'submit', false );
-								?>
-                                <a href="<?php echo admin_url( 'tools.php?page=wpqp' ); ?>"
-                                   class="button button-primary"><?php _e( 'Cancel Provisioning', 'wpqp_provision' ) ?></a>
-								<?php
-							} else {
-								?>
-                                <a href="<?php echo admin_url( 'tools.php?page=wpqp' ); ?>"
-                                   class="button button-primary"><?php _e( 'Start Again', 'wpqp_provision' ) ?></a>
-								<?php
-							}
-						}
-						?>
+                        <a href="<?php echo admin_url( 'tools.php?page=wpqp' ); ?>"
+                           class="button button-primary wpqp_large_button "><?php _e( 'Start Again', 'wpqp_provision' ) ?></a>
                     </p>
-                </form>
+					<?php
+				}
 
-				<?php
 
 				if ( isset( $_POST['submit'] ) && $wpqp_proceed ) {
 
@@ -295,12 +318,15 @@ add_action( 'admin_menu', function () {
 								}
 							}
 						}
-						?>
-                        <p>
-                            <a href="<?php echo admin_url( 'tools.php?page=wpqp' ); ?>"
-                               class="button button-primary"><?php _e( 'Start Again', 'wpqp_provision' ) ?></a>
-                        </p>
-						<?php
+
+						if ( isset( $_POST['wpqp_themes'] ) || isset( $_POST['wpqp_plugins'] ) ) {
+							?>
+                            <p>
+                                <a href="<?php echo admin_url( 'tools.php?page=wpqp' ); ?>"
+                                   class="button button-primary"><?php _e( 'Start Again', 'wpqp_provision' ) ?></a>
+                            </p>
+							<?php
+						}
 					}
 				}
 				?>

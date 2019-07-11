@@ -36,6 +36,75 @@
     display: none;
 }
 
-.wpqp .alternate, .striped>tbody>:nth-child(odd), ul.striped>:nth-child(odd) {
-    background-color: #cce2ec40;
+/*.wpqp .alternate, .striped>tbody>:nth-child(odd), ul.striped>:nth-child(odd) {*/
+    /*background-color: #cce2ec40;*/
+/*}*/
+
+.wpqp_hide{
+    display: none;
+}
+.wpqp_box{
+    background: #fff;
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
+}
+
+.wpqp_box .wpqp_box_header{
+    font-size: 19px;
+    line-height: 30px;
+    padding:10px 20px;
+    border-bottom: 1px solid #f3f3f3;
+    color: #ff631d;
+}
+
+.wpqp_box .wpqp_box_content{
+    padding:15px 20px;
+}
+
+.wpqp_box .wpqp_box_content label{
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 25px;
+}
+
+.wpqp_box .wpqp_box_content input[type='url'],
+.wpqp_box .wpqp_box_content input[type='text']{
+    width: 100%;
+    margin-top: 5px;
+    padding: 12px;
+    vertical-align: top;
+    color: #555;
+    border-color: #ddd;
+    background: #f0fbff;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+    margin-bottom:5px;
+}
+
+.wpqp_box .wpqp_large_button, .wpqp .wpqp_large_button{
+    font-size: 14px;
+    line-height: 44px;
+    height: 46px;
+    padding: 0 36px;
+    margin-top:10px;
+}
+
+.wpqp_box .button-action{
+    background: #e14d43;
+    border-color: #d02c21 #ba281e #ba281e;
+    color: #fff;
+    box-shadow: 0 1px 0 #ba281e;
+    text-shadow: 0 -1px 1px #ba281e, 1px 0 1px #ba281e, 0 1px 1px #ba281e, -1px 0 1px #ba281e;
+}
+
+.wpqp_box_content h2{
+    font-size: 17px;
+    font-weight: normal;
+    color: #333;
+}
+
+.wpqp_box_content p.info{
+    font-size:13px;
+    line-height: 1.6;
+    color: #8c8c8c;
+    margin-bottom: 20px;
 }
