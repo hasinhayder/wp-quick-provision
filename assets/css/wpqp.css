@@ -95,7 +95,7 @@
     box-shadow: 0 1px 0 #ba281e;
     text-shadow: 0 -1px 1px #ba281e, 1px 0 1px #ba281e, 0 1px 1px #ba281e, -1px 0 1px #ba281e;
 }
-.wpqp_box .button-action:hover{
+.wpqp_box .button-action:hover, .wpqp_box .button-action:active{
     background: #e35950;
     border-color: #ba281e;
     color: #fff;
