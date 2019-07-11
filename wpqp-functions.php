@@ -62,7 +62,7 @@ function wpqp_process_provision_source_url( $url ) {
 	return apply_filters( "wpqp_data_source", $wpqp_url );
 }
 
-function wpqp_process_data( $items ) {
+function wpqp_process_data( $items, $items_type = 'theme' ) {
 	//this is kind of an adapter that transforms previous provisioning data format to new format
 	//old format = https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306
 	//new format = https://gist.github.com/hasinhayder/5cf59b883005e043454f5fe0d2d9546b
@@ -70,15 +70,24 @@ function wpqp_process_data( $items ) {
 	foreach ( $items as $item ) {
 		if ( ! is_array( $item ) ) {
 			//it's just a key
-			$wpqp_data[ $item ] = [ 'source' => $item, 'slug' => $item ];
+			$wpqp_data[ $item ]                = [ 'source' => $item, 'slug' => $item, 'origin' => 'internal' ];
+			$wpqp_data[ $item ]['installable'] = wpqp_get_item_url( $wpqp_data[ $item ], $items_type );
 		} else {
+			$wpqp_data[ $item['slug'] ] = [ 'source' => $item['slug'], 'slug' => $item['slug'], 'origin' => 'internal' ];
 			if ( isset( $item['source'] ) ) {
-				$wpqp_data[ $item['slug'] ] = $item;
+				if ( strpos( $item['source'], "http" ) === false ) {
+					$wpqp_data[ $item['slug'] ]['origin'] = 'internal';
+				} else {
+					$wpqp_data[ $item['slug'] ]['origin'] = 'external';
+				}
 			} else {
-				$item['source']             = $item['slug'];
-				$wpqp_data[ $item['slug'] ] = $item;
+				$item['source']                       = $item['slug'];
+				$wpqp_data[ $item['slug'] ]           = $item;
+				$wpqp_data[ $item['slug'] ]['origin'] = 'internal';
 			}
+			$wpqp_data[ $item['slug']]['installable']  = wpqp_get_item_url( $wpqp_data[ $item['slug'] ], $items_type );;
 		}
+
 	}
 
 	return $wpqp_data;

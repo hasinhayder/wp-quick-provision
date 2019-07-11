@@ -5,22 +5,25 @@ if ( ! class_exists( "WP_List_Table" ) ) {
 
 class WPQP_Table extends WP_List_Table {
 	private $_items;
+	private $checkbox_field_name = 'items';
 
-	function __construct( $data ) {
+	function __construct( $data, $type='items' ) {
+		parent::__construct();
 		$this->_items = $data;
+		$this->checkbox_field_name = $type;
 	}
 
 	function get_columns() {
 		return [
-			'cb'     => '<input type="checkbox"/>',
-			'name'   => __( 'Name', 'wp-quick-provision' ),
-			'slug'   => __( 'Source', 'wp-quick-provision' ),
-			'source' => __( 'Source', 'wp-quick-provision' ),
+			'cb'          => '<input type="checkbox">',
+			'slug'        => __( 'Slug', 'wp-quick-provision' ),
+			'origin'      => __( 'Origin', 'wp-quick-provision' ),
+			'installable' => __( 'Install From', 'wp-quick-provision' ),
 		];
 	}
 
 	function column_cb( $item ) {
-		return "<input type='checkbox' value='{$item['id']}'/>";
+		return "<input type='checkbox' name='wpqp_{$this->checkbox_field_name}[]' value='{$item['slug']}' checked/>";
 	}
 
 	function prepare_items() {
@@ -32,4 +35,5 @@ class WPQP_Table extends WP_List_Table {
 	function column_default( $item, $column_name ) {
 		return $item[ $column_name ];
 	}
+
 }

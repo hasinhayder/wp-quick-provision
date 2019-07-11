@@ -12,6 +12,7 @@ Domain Path: /languages/
 */
 
 require_once "wpqp-functions.php";
+require_once "class.wpqp-table.php";
 
 add_action( 'plugins_loaded', function () {
 	load_plugin_textdomain( 'wp-quick-provision' );
@@ -36,24 +37,32 @@ add_action( 'admin_menu', function () {
             <div class="wrap">
                 <h1><?php _e( 'Quickly Provision Your WordPress Setup', 'wp-quick-provision' ); ?></h1>
 
+
                 <form method="POST" class="wpqp_form">
+
 					<?php wp_nonce_field( 'wpqp_provision', 'wpqp_nonce' ); ?>
-                    <label for="gist">
-                        <strong><?php _e( 'Gist URL', 'wp-quick-provision' ); ?></strong>
-                    </label><br/>
-                    <input type="text" name="gist" id="gist" class="wpqp_text"
-                           placeholder="<?php _e( 'Gist URL with Provision Data', 'wp-quick-provision' ); ?>"/>
-                    <p class="description">
-						<?php _e( 'Sample Data URL', 'wp-quick-provision' ); ?>: <a
-                                href="https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306"
-                                target="_blank">https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306</a>
-                    </p>
 					<?php
+					if ( ! isset( $_POST['submit'] ) ) {
+						?>
+                        <label for="gist">
+                            <strong><?php _e( 'Gist URL', 'wp-quick-provision' ); ?></strong>
+                        </label><br/>
+                        <input type="text" name="gist" id="gist" class="wpqp_text"
+                               placeholder="<?php _e( 'Gist URL with Provision Data', 'wp-quick-provision' ); ?>"/>
+                        <p class="description">
+							<?php _e( 'Sample Data URL', 'wp-quick-provision' ); ?>: <a
+                                    href="https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306"
+                                    target="_blank">https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306</a>
+                        </p>
+						<?php
+					}
 
 					if ( isset( $_POST['submit'] ) ) {
 
 						if ( wp_verify_nonce( sanitize_key( $_POST['wpqp_nonce'] ), 'wpqp_provision' ) ) {
 							$wpqp_provision_source_url = wpqp_process_provision_source_url( $_POST['gist'] );
+							$wpqp_gist_mixed_data      = wp_remote_get( $wpqp_provision_source_url );
+							$wpqp_gist_body            = json_decode( strtolower( $wpqp_gist_mixed_data['body'] ), true );
 
 							if ( ! wpqp_validate_provision_source( $wpqp_provision_source_url ) ) {
 								$wpqp_proceed = false;
@@ -65,10 +74,45 @@ add_action( 'admin_menu', function () {
                                 </div>
 								<?php
 							}
+
+							if ( isset( $wpqp_gist_body['themes'] ) ) {
+								$_wpqp_themes = apply_filters( 'wpqp_themes', $wpqp_gist_body['themes'] );
+								$wpqp_themes  = wpqp_process_data( $_wpqp_themes );
+
+								_e( '<h2>Installing the following themes</h2>', 'wp-quick-provision' );
+								$wpqp_themes_table = new WPQP_Table( $wpqp_themes, 'themes' );
+								$wpqp_themes_table->prepare_items();
+								$wpqp_themes_table->display();
+							}
+
+							if ( isset( $wpqp_gist_body['plugins'] ) ) {
+								$_wpqp_plugins = apply_filters( 'wpqp_plugins', $wpqp_gist_body['plugins'] );
+								$wpqp_plugins  = wpqp_process_data( $_wpqp_plugins );
+
+								_e( '<h2>Installing the following plugins</h2>', 'wp-quick-provision' );
+								$wpqp_plugins_table = new WPQP_Table( $wpqp_plugins, 'plugins' );
+								$wpqp_plugins_table->prepare_items();
+								$wpqp_plugins_table->display();
+							}
 						}
 					}
+
+					$wpqp_proceed = false;
 					?>
-					<?php echo submit_button( __( 'Start Provisioning', 'wp-quick-provision' ) ); ?>
+                    <p>
+
+						<?php
+						if ( ! isset( $_POST['submit'] ) ) {
+							echo submit_button( __( 'Process Provisioning Data', 'wp-quick-provision' ), 'primary', 'submit', false );
+						} else {
+							echo submit_button( __( 'Start Provisioning', 'wp-quick-provision' ), 'primary', 'submit', false );
+							?>
+                            <a href="<?php echo admin_url('tools.php?page=wpqp'); ?>"
+                               class="button button-primary"><?php _e( 'Cancel Provisioning', 'wpqp_provision' ) ?></a>
+							<?php
+						}
+						?>
+                    </p>
                 </form>
 
 				<?php
@@ -135,8 +179,9 @@ add_action( 'admin_menu', function () {
 
 							if ( isset( $wpqp_gist_body['plugins'] ) ) {
 								$_wpqp_plugins     = apply_filters( 'wpqp_plugins', $wpqp_gist_body['plugins'] );
-								$wpqp_plugins      = wpqp_process_data( $_wpqp_plugins );
+								$wpqp_plugins      = wpqp_process_data( $_wpqp_plugins, 'plugin' );
 								$wpqp_plugin_error = [];
+
 
 								if ( count( $wpqp_plugins ) > 0 ) {
 									echo '<h2>' . __( 'Installing Plugins', 'wp-quick-provision' ) . '</h2>';
