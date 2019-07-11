@@ -70,6 +70,9 @@ Make sure to set your php script execution time to 300 or more.
 
 == Changelog ==
 
+= 2.0.4 =
+* Plugin URL bug fix
+
 = 2.0.3 =
 * Minor UI Improvements
 
