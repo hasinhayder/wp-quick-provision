@@ -74,6 +74,8 @@ Make sure to set your php script execution time to 300 or more.
 * Huge improvements on workflow
 * All themes and plugins will be displayed in WP_List_Table before starting final provisioning
 * Users can now uncheck any theme or plugin before final provisioning
+* Huge UI Improvement
+* Bulletproof external provision data validation
 
 = 1.1.1 =
 * Minor code fix
