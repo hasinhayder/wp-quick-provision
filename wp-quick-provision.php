@@ -101,7 +101,7 @@ add_action( 'admin_menu', function () {
 											$wpqp_themes  = wpqp_process_data( $_wpqp_themes );
 
 											_e( '<h2>Installing the following themes</h2>', 'wp-quick-provision' );
-											echo '<p class="info">' . __( 'Following is a list of themes we fetched from your provision data url. It contains items from WordPress.org theme repository as well as externally hosted items. If you are not sure to install any of these items, simply uncheck them and they will not be installed. Just for your reference, the provision data url was ', 'wp-quick-provision' ) . sprintf( '<a href="%1$s" target="_blank">%1$s</a>', esc_url( $_POST['gist'] ) ) . '</p>';
+											echo '<p class="info">' . __( 'Following is a list of themes we found from your provision data url. It contains items from WordPress.org theme repository as well as externally hosted items. If you are not sure to install any of these items, simply uncheck them and they will not be installed. Just for your reference, the provision data url was ', 'wp-quick-provision' ) . sprintf( '<a href="%1$s" target="_blank">%1$s</a>', esc_url( $_POST['gist'] ) ) . '</p>';
 											$wpqp_themes_table = new WPQP_Table( $wpqp_themes, 'themes' );
 											$wpqp_themes_table->prepare_items();
 											$wpqp_themes_table->display();
@@ -112,7 +112,7 @@ add_action( 'admin_menu', function () {
 											$wpqp_plugins  = wpqp_process_data( $_wpqp_plugins );
 
 											_e( '<h2>Installing the following plugins</h2>', 'wp-quick-provision' );
-											echo '<p class="info">' . __( 'If you uncheck any item, it will not be installed.', 'wp-quick-provision' ) . '</p>';
+											echo '<p class="info">' . __( 'Following is a list of plugins we found from your provision data url. It contains items from WordPress.org plugin repository as well as externally hosted items. If you are not sure to install any of these items, simply uncheck them and they will not be installed. Just for your reference, the provision data url was ', 'wp-quick-provision' ) . sprintf( '<a href="%1$s" target="_blank">%1$s</a>', esc_url( $_POST['gist'] ) ) . '</p>';
 											$wpqp_plugins_table = new WPQP_Table( $wpqp_plugins, 'plugins' );
 											$wpqp_plugins_table->prepare_items();
 											$wpqp_plugins_table->display();
