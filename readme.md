@@ -57,6 +57,9 @@ Make sure to set your php script execution time to 300 or more.
 
 ## Changelog 
 
+### 2.0.1
+* URl validation fix
+
 ### 2.0
 * Huge improvements on workflow
 * All themes and plugins will be displayed in WP_List_Table before starting final provisioning
