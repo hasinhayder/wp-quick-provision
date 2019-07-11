@@ -35,3 +35,7 @@
 .tablenav.top{
     display: none;
 }
+
+.wpqp .alternate, .striped>tbody>:nth-child(odd), ul.striped>:nth-child(odd) {
+    background-color: #cce2ec40;
+}

@@ -17,7 +17,7 @@ class WPQP_Table extends WP_List_Table {
 		return [
 			'cb'          => '<input type="checkbox">',
 			'slug'        => __( 'Slug', 'wp-quick-provision' ),
-			'origin'      => __( 'Origin', 'wp-quick-provision' ),
+//			'origin'      => __( 'Origin', 'wp-quick-provision' ),
 			'installable' => __( 'Install From', 'wp-quick-provision' ),
 		];
 	}
