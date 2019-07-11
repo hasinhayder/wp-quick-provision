@@ -10,31 +10,33 @@ This is a powerful provisioning plugin to install multiple themes and plugins au
 
 == Description ==
 
-This plugin cave save you from boredom and from doing the same tasks again and again you do after installing a fresh version of WordPress. You can provision your new setup by automatically installing themes and plugins using **WP Quick Provision** plugin, all by supplying a list of those themes and plugins from gist.github.com. Here is a valid data format that is required by this plugin to properly provision your WordPress installation.
+This plugin can save you from doing the same tasks again and again you do after installing a fresh copy of WordPress. You can provision your new setup by automatically installing themes and plugins using **WP Quick Provision** plugin, all by supplying a list of those themes and plugins from gist.github.com. Here is a valid data format that is required by this plugin to properly provision your WordPress installation.
 
-```js
+`
 {
     "themes": [
-        "astra",
         "hello-elementor",
         "wp-bootstrap-starter"
     ],
     "plugins": [
-        "contact-form-7",
-        "woocommerce",
         "elementor",
         "happy-elementor-addons",
+        "contact-form-7",
+        "woocommerce",
         "query-monitor",
         "regenerate-thumbnails",
         "classic-editor",
         "jsm-show-post-meta"
     ]
 }
-```
+`
 
-URL: https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306
+Example Provision Data URL: [https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306](https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306) or [https://gist.github.com/hasinhayder/5cf59b883005e043454f5fe0d2d9546b](https://gist.github.com/hasinhayder/5cf59b883005e043454f5fe0d2d9546b)
 
 As soon as you save this data on gist.github.com and add tis gist url in your plugin, it will start installing all these themes and plugins mentioned in your data. It will not download a plugin if it is already available in your WordPress setup.
+
+From version 1.1 you can host your provision data anywhere and supply that URL to this plugin for provisioning.
+
 
 After installing everything, **WP Quick Provision** will activate all these plugins.
 
@@ -68,20 +70,10 @@ Make sure to set your php script execution time to 300 or more.
 
 == Changelog ==
 
+= 1.1.1 =
+* Minor code fix
+
 = 1.1 =
 * Allow universal URL for provision data
 * Added wpqp_data_source filter for provision data url
-* Added support for external zip url, now you can pass data like this
-`
-{
-  "slug": "happy-elementor-addons",
-  "source": "happy-elementor-addons"
-}
-`
-or
-`
-{
-  "slug": "happy-elementor-addons",
-  "source": "https://downloads.wordpress.org/plugin/happy-elementor-addons.zip"
-}
-`
+* Added support for external **public zip url** for the themes and plugins, please check the new data format at [https://gist.github.com/hasinhayder/5cf59b883005e043454f5fe0d2d9546b](https://gist.github.com/hasinhayder/5cf59b883005e043454f5fe0d2d9546b) - Note that old data format is still valid
