@@ -68,7 +68,7 @@ function wpqp_process_provision_source_url( $url ) {
 	return apply_filters( "wpqp_data_source", $wpqp_url );
 }
 
-function wpqp_process_data( $items, $items_type = 'theme' ) {
+function wpqp_process_data( $items, $items_type ) {
 	//this is kind of an adapter that transforms previous provisioning data format to new format
 	//old format = https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306
 	//new format = https://gist.github.com/hasinhayder/5cf59b883005e043454f5fe0d2d9546b

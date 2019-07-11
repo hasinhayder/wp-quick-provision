@@ -3,7 +3,7 @@
 Plugin Name: WP Quick Provision
 Plugin URI: https://provisionwp.com
 Description: This is a powerful provisioning plugin to install multiple themes and plugins automatically by providing them as a list from <a href='https://gist.github.com'>https://gist.github.com</a>. You can also update multiple options in your options table at once. This plugin can save your time from installing same set of themes and plugins again and again in your WordPress setup. Extremely handy to quickly setup your development platform.
-Version: 2.0.3
+Version: 2.0.4
 Author: Hasin Hayder
 Author URI: https://provisionwp.com
 License: GPLv2 or later
@@ -22,7 +22,7 @@ add_action( 'plugins_loaded', function () {
 
 add_action( 'admin_enqueue_scripts', function ( $hook ) {
 	if ( "tools_page_wpqp" == $hook ) {
-		wp_enqueue_style( 'wpqp-style', plugin_dir_url( __FILE__ ) . "assets/css/wpqp.css");
+		wp_enqueue_style( 'wpqp-style', plugin_dir_url( __FILE__ ) . "assets/css/wpqp.css" );
 	}
 } );
 
@@ -35,7 +35,7 @@ add_action( 'admin_menu', function () {
 		function () {
 
 			//check if the URL is valid
-			if ( isset( $_POST['submit'] ) && ( trim( $_POST['gist'] ) == '' || ! wpqp_validate_provision_source( wpqp_process_provision_source_url( $_POST['gist'] )  ))) {
+			if ( isset( $_POST['submit'] ) && ( trim( $_POST['gist'] ) == '' || ! wpqp_validate_provision_source( wpqp_process_provision_source_url( $_POST['gist'] ) ) ) ) {
 				wp_redirect( admin_url( 'tools.php?page=wpqp' ) );
 				die();
 			}
@@ -98,7 +98,7 @@ add_action( 'admin_menu', function () {
 
 										if ( isset( $wpqp_gist_body['themes'] ) ) {
 											$_wpqp_themes = apply_filters( 'wpqp_themes', $wpqp_gist_body['themes'] );
-											$wpqp_themes  = wpqp_process_data( $_wpqp_themes );
+											$wpqp_themes  = wpqp_process_data( $_wpqp_themes, 'theme' );
 
 											_e( '<h2>Installing the following themes</h2>', 'wp-quick-provision' );
 											echo '<p class="info">' . __( 'Following is a list of themes we found from your provision data url. It contains items from WordPress.org theme repository as well as externally hosted items. If you are not sure to install any of these items, simply uncheck them and they will not be installed. Just for your reference, the provision data url was ', 'wp-quick-provision' ) . sprintf( '<a href="%1$s" target="_blank">%1$s</a>', esc_url( $_POST['gist'] ) ) . '</p>';
@@ -109,7 +109,7 @@ add_action( 'admin_menu', function () {
 
 										if ( isset( $wpqp_gist_body['plugins'] ) ) {
 											$_wpqp_plugins = apply_filters( 'wpqp_plugins', $wpqp_gist_body['plugins'] );
-											$wpqp_plugins  = wpqp_process_data( $_wpqp_plugins );
+											$wpqp_plugins  = wpqp_process_data( $_wpqp_plugins, 'plugin' );
 
 											_e( '<h2>Installing the following plugins</h2>', 'wp-quick-provision' );
 											echo '<p class="info">' . __( 'Following is a list of plugins we found from your provision data url. It contains items from WordPress.org plugin repository as well as externally hosted items. If you are not sure to install any of these items, simply uncheck them and they will not be installed. Just for your reference, the provision data url was ', 'wp-quick-provision' ) . sprintf( '<a href="%1$s" target="_blank">%1$s</a>', esc_url( $_POST['gist'] ) ) . '</p>';
@@ -167,7 +167,7 @@ add_action( 'admin_menu', function () {
 
 							if ( isset( $wpqp_gist_body['themes'] ) && isset( $_POST['wpqp_themes'] ) ) {
 								$_wpqp_themes = apply_filters( 'wpqp_themes', $wpqp_gist_body['themes'] );
-								$wpqp_themes  = wpqp_process_data( $_wpqp_themes );
+								$wpqp_themes  = wpqp_process_data( $_wpqp_themes, 'theme' );
 
 								if ( count( $wpqp_themes ) > 0 ) {
 									echo '<h2>' . __( 'Installing Themes', 'wp-quick-provision' ) . '</h2>';
