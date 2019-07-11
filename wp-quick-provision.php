@@ -59,12 +59,12 @@ add_action( 'admin_menu', function () {
 							if ( ! isset( $_POST['submit'] ) ) {
 								?>
                                 <label for="gist">
-                                    <strong><?php _e( 'Gist URL', 'wp-quick-provision' ); ?></strong>
+                                    <strong><?php _e( 'Provision Configuration URL', 'wp-quick-provision' ); ?></strong>
                                 </label><br/>
                                 <input type="url" name="gist" id="gist" class="wpqp_text" required
-                                       placeholder="<?php _e( 'Gist URL with Provision Data', 'wp-quick-provision' ); ?>"/>
+                                       placeholder="<?php _e( 'Configuration URL with Provision Data', 'wp-quick-provision' ); ?>"/>
                                 <p class="description">
-									<?php _e( 'Sample Data URL', 'wp-quick-provision' ); ?>: <a
+									<?php _e( 'Sample Provision Configuration URL', 'wp-quick-provision' ); ?>: <a
                                             href="https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306"
                                             target="_blank">https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306</a>
                                 </p>
@@ -88,7 +88,7 @@ add_action( 'admin_menu', function () {
 										?>
                                         <div class="wpqp_info wpqp_error">
                                             <p>
-												<?php _e( "Invalid Data URL", 'wp-quick-provision' ); ?>
+												<?php _e( "Invalid Provision Configuration URL", 'wp-quick-provision' ); ?>
                                             </p>
                                         </div>
 										<?php
