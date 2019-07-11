@@ -35,7 +35,7 @@ add_action( 'admin_menu', function () {
 		function () {
 
 			//check if the URL is valid
-			if ( isset( $_POST['submit'] ) && ( trim( $_POST['gist'] ) == '' || ! wpqp_validate_provision_source( esc_url( $_POST['gist'] ) ) ) ) {
+			if ( isset( $_POST['submit'] ) && ( trim( $_POST['gist'] ) == '' || ! wpqp_validate_provision_source( wpqp_process_provision_source_url( $_POST['gist'] )  ))) {
 				wp_redirect( admin_url( 'tools.php?page=wpqp' ) );
 				die();
 			}
