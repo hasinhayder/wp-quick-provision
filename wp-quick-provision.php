@@ -13,6 +13,7 @@ Domain Path: /languages/
 @package wp_quick_provision
 */
 
+define( 'WPQP_VERSION', '2.0.5' );
 require_once "wpqp-functions.php";
 require_once "class.wpqp-table.php";
 
@@ -22,7 +23,7 @@ add_action( 'plugins_loaded', function () {
 
 add_action( 'admin_enqueue_scripts', function ( $hook ) {
 	if ( "tools_page_wpqp" == $hook ) {
-		wp_enqueue_style( 'wpqp-style', plugin_dir_url( __FILE__ ) . "assets/css/wpqp.css" );
+		wp_enqueue_style( 'wpqp-style', plugin_dir_url( __FILE__ ) . 'assets/css/wpqp.css', null, WPQP_VERSION );
 	}
 } );
 
@@ -40,7 +41,7 @@ add_action( 'admin_menu', function () {
 				 * If it is empty or if the URL doesn't have valid body content, a JOSN object with themes and plugins in it
 				 * we're going to redirect the visitor to input it again
 				 */
-			    wp_redirect( admin_url( 'tools.php?page=wpqp' ) );
+				wp_redirect( admin_url( 'tools.php?page=wpqp' ) );
 				die();
 			}
 
@@ -61,11 +62,11 @@ add_action( 'admin_menu', function () {
 							<?php
 
 							if ( ! isset( $_POST['submit'] ) ) {
-							    /**
-							     * This if block hides the form elements, especially gist textbox
-							     * after the first form submission, because at this point we already have the url
-							     * and we just want to show the list of themes and plugins to our user
-							     */
+								/**
+								 * This if block hides the form elements, especially gist textbox
+								 * after the first form submission, because at this point we already have the url
+								 * and we just want to show the list of themes and plugins to our user
+								 */
 								?>
                                 <label for="gist">
                                     <strong><?php _e( 'Provision Configuration URL', 'wp-quick-provision' ); ?></strong>
@@ -83,8 +84,8 @@ add_action( 'admin_menu', function () {
 							if ( isset( $_POST['submit'] ) ) {
 								/**
 								 * This is first submission of the form, so we're going to fetch the list of themes and plugins
-                                 * from the configuration URL and show them in WP_List_Table. There will be checkboxes beside
-                                 * each of these items and user can uncheck and submit which will be handled in second submission
+								 * from the configuration URL and show them in WP_List_Table. There will be checkboxes beside
+								 * each of these items and user can uncheck and submit which will be handled in second submission
 								 */
 
 								if ( wp_verify_nonce( sanitize_key( $_POST['wpqp_nonce'] ), 'wpqp_provision' ) ) {
@@ -147,12 +148,12 @@ add_action( 'admin_menu', function () {
                             <p>
 								<?php
 								if ( ! isset( $_POST['submit'] ) ) {
-								    //First time view
+									//First time view
 									echo submit_button( __( 'Process Provisioning Data', 'wp-quick-provision' ), 'primary wpqp_large_button', 'submit', false );
 								} else {
-								    //Form has been submitted
+									//Form has been submitted
 									if ( ! isset( $_POST['proceed'] ) ) {
-									    //First form submission, table is showing now
+										//First form submission, table is showing now
 										echo submit_button( __( 'Start Provisioning', 'wp-quick-provision' ), 'primary wpqp_large_button', 'submit', false );
 										?>
                                         <a href="<?php echo admin_url( 'tools.php?page=wpqp' ); ?>"
@@ -167,7 +168,7 @@ add_action( 'admin_menu', function () {
                 </form>
 				<?php
 				if ( isset( $_POST['proceed'] ) ) {
-				    //2nd time form submitted
+					//2nd time form submitted
 					?>
                     <p>
                         <a href="<?php echo admin_url( 'tools.php?page=wpqp' ); ?>"
@@ -196,7 +197,7 @@ add_action( 'admin_menu', function () {
 								$wpqp_themes  = wpqp_process_data( $_wpqp_themes, 'theme' );
 
 								if ( count( $wpqp_themes ) > 0 ) {
-								    //We made sure that we have more than 0 themes in the configuration data
+									//We made sure that we have more than 0 themes in the configuration data
 									echo '<h2>' . __( 'Installing Themes', 'wp-quick-provision' ) . '</h2>';
 
 									foreach ( $wpqp_themes as $wpqp_theme => $wpqp_theme_data ) {
@@ -206,10 +207,10 @@ add_action( 'admin_menu', function () {
 											//We made sure that user didn't uncheck the current theme
 
 											if ( ! array_key_exists( $wpqp__theme, $wpqp_installed_themes ) ) {
-											    //current theme is not already installed
+												//current theme is not already installed
 
 												if ( wpqp_is_okay_to_install( $wpqp_theme_data, 'theme' ) ) {
-												    //the theme is valid, so sets install it
+													//the theme is valid, so sets install it
 													?>
                                                     <div class="wpqp_info wpqp_success">
                                                         <p>
@@ -223,7 +224,7 @@ add_action( 'admin_menu', function () {
                                                     </div>
 													<?php
 												} else {
-												    //this theme is in closed state in wp.org repository
+													//this theme is in closed state in wp.org repository
 													?>
                                                     <div class="wpqp_info wpqp_error">
                                                         <p>
@@ -234,7 +235,7 @@ add_action( 'admin_menu', function () {
 												}
 
 											} else {
-											    //the theme was pre installed
+												//the theme was pre installed
 												?>
                                                 <div class="wpqp_info wpqp_warning">
                                                     <p>
@@ -263,13 +264,13 @@ add_action( 'admin_menu', function () {
 										$wpqp__plugin = strtolower( trim( $wpqp_plugin ) );
 
 										if ( in_array( $wpqp__plugin, $_POST['wpqp_plugins'] ) ) {
-										    //We made sure that user didn't uncheck the current plugin
+											//We made sure that user didn't uncheck the current plugin
 
 											if ( ! array_key_exists( $wpqp__plugin, $wpqp_installed_plugins ) ) {
-											    //current plugin is not already installed
+												//current plugin is not already installed
 
 												if ( wpqp_is_okay_to_install( $wpqp_plugin_data, 'plugin' ) ) {
-												    //this plugin is valid, lets install it
+													//this plugin is valid, lets install it
 													?>
                                                     <div class="wpqp_info wpqp_success">
                                                         <p>
@@ -316,7 +317,7 @@ add_action( 'admin_menu', function () {
 										$wpqp__plugin = strtolower( trim( $wpqp_plugin ) );
 
 										if ( ! isset( $wpqp_plugin_error[ $wpqp_plugin ] ) && in_array( $wpqp_plugin, $_POST['wpqp_plugins'] ) ) {
-                                            //if the current plugin was not in closed state and if user didn't uncheck it
+											//if the current plugin was not in closed state and if user didn't uncheck it
 											if ( ! is_plugin_active( $wpqp_installed_plugins[ $wpqp__plugin ] ) ) {
 												activate_plugin( $wpqp_installed_plugins[ $wpqp__plugin ] );
 												?>
@@ -343,7 +344,7 @@ add_action( 'admin_menu', function () {
 							}
 
 							if ( isset( $wpqp_gist_body['options'] ) ) {
-							    //lets process each key value pair of options data, if available
+								//lets process each key value pair of options data, if available
 								$wpqp_options = apply_filters( 'wpqp_options', $wpqp_gist_body['options'] );
 
 								if ( count( $wpqp_options ) > 0 ) {
@@ -359,7 +360,7 @@ add_action( 'admin_menu', function () {
 						}
 
 						if ( isset( $_POST['wpqp_themes'] ) || isset( $_POST['wpqp_plugins'] ) ) {
-						    //2nd submission, so allow users to start again
+							//2nd submission, so allow users to start again
 							?>
                             <p>
                                 <a href="<?php echo admin_url( 'tools.php?page=wpqp' ); ?>"
