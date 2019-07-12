@@ -187,7 +187,8 @@ add_action( 'admin_menu', function () {
                                                         </p>
                                                         <p>
 															<?php
-															$wpqp_theme_installer->install( wpqp_get_item_url( $wpqp_theme_data ) );
+															//$wpqp_theme_installer->install( wpqp_get_item_url( $wpqp_theme_data ) );
+															$wpqp_theme_installer->install( $wpqp_theme_data['installable'] );
 															?>
                                                         </p>
                                                     </div>
@@ -241,7 +242,8 @@ add_action( 'admin_menu', function () {
                                                         </p>
                                                         <p>
 															<?php
-															$wpqp_plugin_installer->install( wpqp_get_item_url( $wpqp_plugin_data, 'plugin' ) );
+															//$wpqp_plugin_installer->install( wpqp_get_item_url( $wpqp_plugin_data, 'plugin' ) );
+															$wpqp_plugin_installer->install( $wpqp_plugin_data['installable'] );
 															?>
                                                         </p>
                                                     </div>
