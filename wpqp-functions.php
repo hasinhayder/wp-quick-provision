@@ -87,6 +87,7 @@ function wpqp_process_data( $items, $items_type ) {
 	//old format = https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306
 	//new format = https://gist.github.com/hasinhayder/5cf59b883005e043454f5fe0d2d9546b
 	$wpqp_data = [];
+
 	foreach ( $items as $item ) {
 		if ( ! is_array( $item ) ) {
 			//it's just a key
@@ -94,22 +95,24 @@ function wpqp_process_data( $items, $items_type ) {
 			$wpqp_data[ $item ]['installable'] = wpqp_get_item_url( $wpqp_data[ $item ], $items_type );
 		} else {
 			$wpqp_data[ $item['slug'] ] = [
-				'source' => $item['slug'],
 				'slug'   => $item['slug'],
 				'origin' => 'internal'
 			];
 			if ( isset( $item['source'] ) ) {
-				if ( strpos( $item['source'], "http" ) === false ) {
-					$wpqp_data[ $item['slug'] ]['origin'] = 'internal';
+				if ( !wpqp_has_http( $item['source'] ) ) {
+					$wpqp_data[ $item['slug'] ]['origin']      = 'internal';
+					$wpqp_data[ $item['slug'] ]['installable'] = wpqp_get_item_url( $wpqp_data[ $item['slug'] ], $items_type );
 				} else {
-					$wpqp_data[ $item['slug'] ]['origin'] = 'external';
+					$wpqp_data[ $item['slug'] ]['origin']      = 'external';
+					$wpqp_data[ $item['slug'] ]['installable'] = $item['source'];
+					$wpqp_data[ $item['slug'] ]['source'] = $item['source'];
 				}
 			} else {
-				$item['source']                       = $item['slug'];
-				$wpqp_data[ $item['slug'] ]           = $item;
-				$wpqp_data[ $item['slug'] ]['origin'] = 'internal';
+				$item['source']                            = $item['slug'];
+				$wpqp_data[ $item['slug'] ]                = $item;
+				$wpqp_data[ $item['slug'] ]['origin']      = 'internal';
+				$wpqp_data[ $item['slug'] ]['installable'] = wpqp_get_item_url( $wpqp_data[ $item['slug'] ], $items_type );
 			}
-			$wpqp_data[ $item['slug'] ]['installable'] = wpqp_get_item_url( $wpqp_data[ $item['slug'] ], $items_type );;
 		}
 
 	}
@@ -144,6 +147,7 @@ function wpqp_has_http( $data ) {
 }
 
 function wpqp_remote_get( $url ) {
+	//a wrapper of wp_remote_get with support for wp.org username for fetching user's favorite themes and plugins
 	if ( wpqp_has_http( $url ) ) {
 		$wpqp_remote_result = wp_remote_get( $url );
 	} else {
@@ -155,42 +159,42 @@ function wpqp_remote_get( $url ) {
 			'user'     => $url,
 			'browse'   => 'favorites',
 			'per_page' => 250,
-			'fields'=>[
-				'description'=>false,
-				'short_description'=>false,
-				'download_link'=>false,
-				'tags'=>false,
-				'icons'=>false,
-				'ratings'=>false,
+			'fields'   => [
+				'description'       => false,
+				'short_description' => false,
+				'download_link'     => false,
+				'tags'              => false,
+				'icons'             => false,
+				'ratings'           => false,
 			]
 		] );
 
 		$org_favorite_plugins = plugins_api( "query_plugins", [
 			'user'     => $url,
 			'per_page' => 250,
-			'fields'=>[
-				'description'=>false,
-				'short_description'=>false,
-				'download_link'=>false,
-				'tags'=>false,
-				'icons'=>false,
-				'ratings'=>false,
+			'fields'   => [
+				'description'       => false,
+				'short_description' => false,
+				'download_link'     => false,
+				'tags'              => false,
+				'icons'             => false,
+				'ratings'           => false,
 			]
 		] );
 
 		if ( isset( $org_favorite_themes->themes ) ) {
 			foreach ( $org_favorite_themes->themes as $theme ) {
-				array_push($wpqp_remote_result['body']['themes'],$theme->slug);
+				array_push( $wpqp_remote_result['body']['themes'], $theme->slug );
 			}
 		}
 
 		if ( isset( $org_favorite_plugins->plugins ) ) {
 			foreach ( $org_favorite_plugins->plugins as $plugin ) {
-				array_push($wpqp_remote_result['body']['plugins'],$plugin['slug']);
+				array_push( $wpqp_remote_result['body']['plugins'], $plugin['slug'] );
 			}
 		}
 
-		$wpqp_remote_result['body'] = json_encode($wpqp_remote_result['body']);
+		$wpqp_remote_result['body'] = json_encode( $wpqp_remote_result['body'] );
 
 	}
 

@@ -69,14 +69,14 @@ add_action( 'admin_menu', function () {
 								 */
 								?>
                                 <label for="gist">
-                                    <strong><?php _e( 'Provision Configuration URL', 'wp-quick-provision' ); ?></strong>
+                                    <strong><?php _e( 'Provision Configuration URL or WordPress.org Username', 'wp-quick-provision' ); ?></strong>
                                 </label><br/>
                                 <input type="text" name="gist" id="gist" class="wpqp_text" required
-                                       placeholder="<?php _e( 'Configuration URL with Provision Data', 'wp-quick-provision' ); ?>"/>
+                                       placeholder="<?php _e( 'Configuration URL with Provision Data or WordPress.org Username', 'wp-quick-provision' ); ?>"/>
                                 <p class="info">
-									<?php _e( 'Sample Provision Configuration URL', 'wp-quick-provision' ); ?>: <a
-                                            href="https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306"
-                                            target="_blank">https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306</a>
+                                    <?php printf(__('You can use this sample configuration url <a
+                                            href="%1$s"
+                                            target="_blank">%1$s</a> or this sample WordPress.org username <a href="%2$s" target="_blank">%2$s</a>', 'wp-quick-provision'),'https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306', 'HasinHayder'); ?>
                                 </p>
 								<?php
 							}
@@ -91,7 +91,7 @@ add_action( 'admin_menu', function () {
 								if ( wp_verify_nonce( sanitize_key( $_POST['wpqp_nonce'] ), 'wpqp_provision' ) ) {
 									?>
                                     <input type="hidden" name="gist"
-                                           value="<?php echo esc_url( $_POST['gist'] ); ?>"/>
+                                           value="<?php echo wpqp_process_provision_source_url( $_POST['gist'] ); ?>"/>
                                     <input type="hidden" name="proceed" value="hellyeah"/>
 									<?php
 									$wpqp_provision_source_url = wpqp_process_provision_source_url( $_POST['gist'] );
