@@ -71,9 +71,9 @@ add_action( 'admin_menu', function () {
                                 <label for="gist">
                                     <strong><?php _e( 'Provision Configuration URL', 'wp-quick-provision' ); ?></strong>
                                 </label><br/>
-                                <input type="url" name="gist" id="gist" class="wpqp_text" required
+                                <input type="text" name="gist" id="gist" class="wpqp_text" required
                                        placeholder="<?php _e( 'Configuration URL with Provision Data', 'wp-quick-provision' ); ?>"/>
-                                <p class="description">
+                                <p class="info">
 									<?php _e( 'Sample Provision Configuration URL', 'wp-quick-provision' ); ?>: <a
                                             href="https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306"
                                             target="_blank">https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306</a>
@@ -95,8 +95,7 @@ add_action( 'admin_menu', function () {
                                     <input type="hidden" name="proceed" value="hellyeah"/>
 									<?php
 									$wpqp_provision_source_url = wpqp_process_provision_source_url( $_POST['gist'] );
-									$wpqp_gist_mixed_data      = wp_remote_get( $wpqp_provision_source_url );
-									$wpqp_gist_body            = json_decode( strtolower( $wpqp_gist_mixed_data['body'] ), true );
+
 
 									if ( ! wpqp_validate_provision_source( $wpqp_provision_source_url ) ) {
 										/**
@@ -111,6 +110,9 @@ add_action( 'admin_menu', function () {
                                         </div>
 										<?php
 									}
+
+									$wpqp_gist_mixed_data      = wpqp_remote_get( $wpqp_provision_source_url );
+									$wpqp_gist_body            = json_decode( strtolower( $wpqp_gist_mixed_data['body'] ), true );
 
 									if ( ! isset( $_POST['proceed'] ) ) {
 										/**
@@ -184,7 +186,7 @@ add_action( 'admin_menu', function () {
 					if ( wp_verify_nonce( sanitize_key( $_POST['wpqp_nonce'] ), 'wpqp_provision' ) ) {
 						$wpqp_theme_installer  = new Theme_Upgrader();
 						$wpqp_plugin_installer = new Plugin_Upgrader();
-						$wpqp_gist_mixed_data  = wp_remote_get( $wpqp_provision_source_url );
+						$wpqp_gist_mixed_data  = wpqp_remote_get( $wpqp_provision_source_url );
 
 						if ( isset( $wpqp_gist_mixed_data['body'] ) && trim( $wpqp_gist_mixed_data['body'] ) != '' ) {
 							$wpqp_gist_body         = json_decode( strtolower( $wpqp_gist_mixed_data['body'] ), true );

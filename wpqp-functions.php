@@ -44,15 +44,26 @@ function wpqp_is_okay_to_install( $wpqp_item, $wpqp_type = 'theme' ) {
 
 function wpqp_validate_provision_source( $url ) {
 	//this function checks if the provisioning url contains valid data format
-	$wpqp_remote_data = wp_remote_get( $url );
-	if(is_array($wpqp_remote_data)) {
-		$wpqp_remote_body = json_decode( strtolower( $wpqp_remote_data['body'] ), true );
-		if ( isset( $wpqp_remote_body['themes'] ) || isset( $wpqp_remote_body['plugins'] ) ) {
-			return true;
+
+	if ( trim( $url ) == '' ) {
+		return false;
+	}
+
+	if ( wpqp_has_http( $url ) ) {
+		$wpqp_remote_data = wp_remote_get( $url );
+		if ( is_array( $wpqp_remote_data ) ) {
+			$wpqp_remote_body = json_decode( strtolower( $wpqp_remote_data['body'] ), true );
+			if ( isset( $wpqp_remote_body['themes'] ) || isset( $wpqp_remote_body['plugins'] ) ) {
+				return true;
+			}
+		} else {
+			//other types of data
+			return false;
 		}
 	}
 
-	return false;
+	//org username
+	return true;
 }
 
 function wpqp_process_provision_source_url( $url ) {
@@ -61,8 +72,11 @@ function wpqp_process_provision_source_url( $url ) {
 	$url = trim( strtolower( sanitize_text_field( $url ) ) );
 	if ( strpos( $url, "gist.github.com" ) !== false ) {
 		$wpqp_url = trailingslashit( esc_url( $url ) ) . "raw";
-	} else {
+	} else if ( wpqp_has_http( $url ) ) {
 		$wpqp_url = esc_url( $url );
+	} else {
+		//org username, return it
+		return $url;
 	}
 
 	return apply_filters( "wpqp_data_source", $wpqp_url );
@@ -119,4 +133,66 @@ function wpqp_get_item_url( $wpqp_item, $wpqp_item_type = 'theme' ) {
 			return esc_url( $wpqp_item['source'] );
 		}
 	}
+}
+
+function wpqp_has_http( $data ) {
+	if ( strpos( $data, 'http' ) !== false ) {
+		return true;
+	}
+
+	return false;
+}
+
+function wpqp_remote_get( $url ) {
+	if ( wpqp_has_http( $url ) ) {
+		$wpqp_remote_result = wp_remote_get( $url );
+	} else {
+		//org user name
+		include_once( ABSPATH . 'wp-admin/includes/plugin-install.php' );
+		$wpqp_remote_result = [ 'body' => [ 'themes' => [], 'plugins' => [] ] ];
+
+		$org_favorite_themes = themes_api( "query_themes", [
+			'user'     => $url,
+			'browse'   => 'favorites',
+			'per_page' => 250,
+			'fields'=>[
+				'description'=>false,
+				'short_description'=>false,
+				'download_link'=>false,
+				'tags'=>false,
+				'icons'=>false,
+				'ratings'=>false,
+			]
+		] );
+
+		$org_favorite_plugins = plugins_api( "query_plugins", [
+			'user'     => $url,
+			'per_page' => 250,
+			'fields'=>[
+				'description'=>false,
+				'short_description'=>false,
+				'download_link'=>false,
+				'tags'=>false,
+				'icons'=>false,
+				'ratings'=>false,
+			]
+		] );
+
+		if ( isset( $org_favorite_themes->themes ) ) {
+			foreach ( $org_favorite_themes->themes as $theme ) {
+				array_push($wpqp_remote_result['body']['themes'],$theme->slug);
+			}
+		}
+
+		if ( isset( $org_favorite_plugins->plugins ) ) {
+			foreach ( $org_favorite_plugins->plugins as $plugin ) {
+				array_push($wpqp_remote_result['body']['plugins'],$plugin['slug']);
+			}
+		}
+
+		$wpqp_remote_result['body'] = json_encode($wpqp_remote_result['body']);
+
+	}
+
+	return $wpqp_remote_result;
 }
