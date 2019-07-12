@@ -359,6 +359,7 @@ add_action( 'admin_menu', function () {
 						}
 
 						if ( isset( $_POST['wpqp_themes'] ) || isset( $_POST['wpqp_plugins'] ) ) {
+						    //2nd submission, so allow users to start again
 							?>
                             <p>
                                 <a href="<?php echo admin_url( 'tools.php?page=wpqp' ); ?>"
