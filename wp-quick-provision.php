@@ -3,7 +3,7 @@
 Plugin Name: WP Quick Provision
 Plugin URI: https://provisionwp.com
 Description: This is a powerful provisioning plugin to install multiple themes and plugins automatically by providing them as a list from <a href='https://gist.github.com'>https://gist.github.com</a>. You can also update multiple options in your options table at once. This plugin can save your time from installing same set of themes and plugins again and again in your WordPress setup. Extremely handy to quickly setup your development platform.
-Version: 3.0
+Version: 3.0.1
 Author: Hasin Hayder
 Author URI: https://provisionwp.com
 License: GPLv2 or later
@@ -91,7 +91,7 @@ add_action( 'admin_menu', function () {
 								if ( wp_verify_nonce( sanitize_key( $_POST['wpqp_nonce'] ), 'wpqp_provision' ) ) {
 									?>
                                     <input type="hidden" name="gist"
-                                           value="<?php echo wpqp_process_provision_source_url( $_POST['gist'] ); ?>"/>
+                                           value="<?php echo sanitize_text_field( $_POST['gist'] ); ?>"/>
                                     <input type="hidden" name="proceed" value="hellyeah"/>
 									<?php
 									$wpqp_provision_source_url = wpqp_process_provision_source_url( $_POST['gist'] );
