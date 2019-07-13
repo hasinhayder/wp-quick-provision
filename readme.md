@@ -57,6 +57,10 @@ Make sure to set your php script execution time to 300 or more.
 
 ## Changelog 
 
+### 3.0.1 =
+* URL malformation bug fix which prevented from fetching the correct data for some url patterns
+
+
 ### 3.0 
 * Support for WordPress.org username is now available. If supplied, user's favorite theme and plugin will be fetched and displayed for provisioning
 * Better code documentation
