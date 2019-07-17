@@ -76,7 +76,7 @@ add_action( 'admin_menu', function () {
                                 <p class="info">
                                     <?php printf(__('You can use this sample configuration url <a
                                             href="%1$s"
-                                            target="_blank">%1$s</a> or this sample WordPress.org username <a href="%2$s" target="_blank">%2$s</a>', 'wp-quick-provision'),'https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306', 'HasinHayder'); ?>
+                                            target="_blank">%1$s</a> or this sample WordPress.org username <strong>%2$s</strong>', 'wp-quick-provision'),'https://gist.github.com/hasinhayder/7b93c50e5f0ff11e26b9b8d81f81d306', 'HasinHayder'); ?>
                                 </p>
 								<?php
 							}
@@ -122,9 +122,18 @@ add_action( 'admin_menu', function () {
 										if ( isset( $wpqp_gist_body['themes'] ) ) {
 											$_wpqp_themes = apply_filters( 'wpqp_themes', $wpqp_gist_body['themes'] );
 											$wpqp_themes  = wpqp_process_data( $_wpqp_themes, 'theme' );
-
+											
+											if (isset($_POST['gist'])){
+												$gist_yeah = $_POST['gist'];
+												if(wp_http_validate_url($gist_yeah)) {
+													$UsernameOrUrl = $gist_yeah;
+												}elseif (validate_username($gist_yeah)) {
+													$UsernameOrUrl = 'https://profiles.wordpress.org/'.$gist_yeah.'/#content-favorites';
+												}
+											}
+											
 											_e( '<h2>Installing the following themes</h2>', 'wp-quick-provision' );
-											echo '<p class="info">' . __( 'Following is a list of themes we found from your provision data url. It contains items from WordPress.org theme repository as well as externally hosted items. If you are not sure to install any of these items, simply uncheck them and they will not be installed. Just for your reference, the provision data url was ', 'wp-quick-provision' ) . sprintf( '<a href="%1$s" target="_blank">%1$s</a>', esc_url( $_POST['gist'] ) ) . '</p>';
+											echo '<p class="info">' . __( 'Following is a list of themes we found from your provision data url. It contains items from WordPress.org theme repository as well as externally hosted items. If you are not sure to install any of these items, simply uncheck them and they will not be installed. Just for your reference, the provision data url was ', 'wp-quick-provision' ) . sprintf( '<a href="%1$s" target="_blank">%1$s</a>', esc_url( $UsernameOrUrl ) ) . '</p>';
 											$wpqp_themes_table = new WPQP_Table( $wpqp_themes, 'themes' );
 											$wpqp_themes_table->prepare_items();
 											$wpqp_themes_table->display();
